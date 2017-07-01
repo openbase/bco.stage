@@ -1,10 +1,10 @@
-package de.citec.csra;
+package org.openbase.bco.visual.stage;
 
 /*
  * #%L
- * Skeleton Animation
+ * BCO Visual Stage
  * %%
- * Copyright (C) 2016 - 2017 citec
+ * Copyright (C) 2017 openbase.org
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,10 +22,10 @@ package de.citec.csra;
  * #L%
  */
 
-import de.citec.csra.jp.JPPostureScope;
-import de.citec.csra.jp.JPLocalInput;
-import de.citec.csra.jp.JPRayScope;
-import de.citec.csra.rsb.RSBConnection;
+import org.openbase.bco.visual.stage.jp.JPPostureScope;
+import org.openbase.bco.visual.stage.jp.JPLocalInput;
+import org.openbase.bco.visual.stage.jp.JPRayScope;
+import org.openbase.bco.visual.stage.rsb.RSBConnection;
 import java.util.List;
 import javafx.application.Application;
 import javafx.stage.Stage;

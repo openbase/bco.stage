@@ -1,10 +1,10 @@
-package de.citec.csra.visualization;
+package org.openbase.bco.visual.stage.visualization;
 
 /*
  * #%L
- * pointing
+ * BCO Visual Stage
  * %%
- * Copyright (C) 2016 citec
+ * Copyright (C) 2017 openbase.org
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

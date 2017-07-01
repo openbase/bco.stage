@@ -1,10 +1,10 @@
-package de.citec.csra.rsb;
+package org.openbase.bco.visual.stage.rsb;
 
 /*
  * #%L
- * pointing
+ * BCO Visual Stage
  * %%
- * Copyright (C) 2016 citec
+ * Copyright (C) 2017 openbase.org
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,9 +22,9 @@ package de.citec.csra.rsb;
  * #L%
  */
 
-import de.citec.csra.jp.JPPostureScope;
-import de.citec.csra.jp.JPLocalInput;
-import de.citec.csra.jp.JPRayScope;
+import org.openbase.bco.visual.stage.jp.JPPostureScope;
+import org.openbase.bco.visual.stage.jp.JPLocalInput;
+import org.openbase.bco.visual.stage.jp.JPRayScope;
 import org.openbase.jps.core.JPService;
 import org.openbase.jps.exception.JPNotAvailableException;
 import org.openbase.jul.exception.CouldNotPerformException;

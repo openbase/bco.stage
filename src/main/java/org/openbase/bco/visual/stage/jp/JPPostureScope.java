@@ -1,4 +1,4 @@
-package de.citec.csra;
+package org.openbase.bco.visual.stage.jp;
 
 /*
  * #%L
@@ -22,48 +22,27 @@ package de.citec.csra;
  * #L%
  */
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.openbase.jps.exception.JPNotAvailableException;
+import rsb.Scope;
 
 /**
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de>Thoren Huppke</a>
  */
-public class AppTest {
+public class JPPostureScope extends AbstractJPScope {
+    public final static String[] COMMAND_IDENTIFIERS = {"--ps", "--posture-in-scope"};
     
-    public AppTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
+    public JPPostureScope(){
+        super(COMMAND_IDENTIFIERS);
     }
 
-    /**
-     * Test of main method, of class App.
-     */
-    @org.junit.Test
-    public void testMain() {
-//        System.out.println("main");
-//        String[] args = null;
-//        App.main(args);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
+    @Override
+    public String getDescription() {
+        return "Defines the scope used to receive posture data.";
     }
-    
+
+    @Override
+    protected Scope getPropertyDefaultValue() throws JPNotAvailableException {
+        return new Scope("/merged_skeletons");
+    }
 }

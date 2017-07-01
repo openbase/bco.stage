@@ -1,10 +1,15 @@
-package de.citec.csra.jp;
-
 /*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.openbase.bco.visual.stage.visualization;
+
+/*-
  * #%L
- * ceoraup
+ * BCO Visual Stage
  * %%
- * Copyright (C) 2016 citec
+ * Copyright (C) 2017 openbase.org
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,27 +27,24 @@ package de.citec.csra.jp;
  * #L%
  */
 
-import org.openbase.jps.exception.JPNotAvailableException;
-import rsb.Scope;
-
 /**
  *
- * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de>Thoren Huppke</a>
+ * @author thoren
  */
-public class JPRayScope extends AbstractJPScope {
-    public final static String[] COMMAND_IDENTIFIERS = {"--rs", "--ray-in-scope"};
-    
-    public JPRayScope(){
-        super(COMMAND_IDENTIFIERS);
+public class JointPair {
+    private final Joints joint1;
+    private final Joints joint2;
+
+    public JointPair(Joints joint1, Joints joint2) {
+        this.joint1 = joint1;
+        this.joint2 = joint2;
     }
 
-    @Override
-    public String getDescription() {
-        return "Defines the scope used to receive pointing ray data.";
+    public Joints getJoint1() {
+        return joint1;
     }
 
-    @Override
-    protected Scope getPropertyDefaultValue() throws JPNotAvailableException {
-        return new Scope("/pointing_rays");
+    public Joints getJoint2() {
+        return joint2;
     }
 }

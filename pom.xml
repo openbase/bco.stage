@@ -1,26 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
-
     <groupId>org.openbase.bco</groupId>
     <artifactId>visual-stage</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <version>1.4-SNAPSHOT</version>
 
     <name>BCO Visual Stage</name>
-    <inceptionYear>2016</inceptionYear>
+    <inceptionYear>2017</inceptionYear>
+    <description>A software that presents a 3d-representation of the appartment, tracked skeletons, detected pointing rays and controllable objects.</description>
+    
+    <!--<url>https://github.com/divinecooperation/bco.visual-stage/wiki</url>-->
     
     <organization>
-        <name>citec</name>
+        <name>openbase.org</name>
+        <url>https://github.com/openbase</url>
     </organization>
-    
-    <!--
-        <url>https://github.com/divinecooperation/bco.registry.editor/wiki</url>
-        <url>http://maven.apache.org</url>
-    -->
     
     <developers>
         <developer>
@@ -35,24 +29,30 @@
         </developer>
     </developers>
  
-    <!--   
-         <licenses>
-            <license>
-                <name>GPLv3</name>
-                <url>http://www.gnu.org/licenses/gpl.html</url>
-            </license>
-        </licenses>
-    -->
+    <licenses>
+        <license>
+            <name>GPLv3</name>
+            <url>http://www.gnu.org/licenses/gpl.html</url>
+        </license>
+    </licenses>
+    
+    <packaging>jar</packaging>
+    
+    <scm>
+        <connection>scm:git:https://github.com/openbase/bco.visual-stage.git</connection>
+        <developerConnection>scm:git:https://github.com/openbase/bco.visual-stage.git</developerConnection>
+        <url>https://github.com/openbase/bco.visual-stage.git</url>
+    </scm>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.5.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${source.java.version}</source>
+                    <target>${target.java.version}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -70,8 +70,8 @@
                 <configuration>
                     <programs>
                         <program>
-                            <mainClass>de.citec.csra.App</mainClass>
-                            <id>App</id>
+                            <mainClass>org.openbase.bco.visual_stage.App</mainClass>
+                            <id>visual-stage</id>
                             <platforms>
                                 <platform>unix</platform>
                             </platforms>
@@ -82,11 +82,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.0.1</version>
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.citec.csra.App</mainClass>
+                            <mainClass>org.openbase.bco.visual_stage.App</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -111,9 +111,19 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>1.8</version>
+                <version>1.10</version>
                 <configuration>
                     <verbose>false</verbose>
+                    <licenseName>gpl_v3</licenseName>
+                    <failOnMissingHeader>true</failOnMissingHeader>
+                    <failOnNotUptodateHeader>true</failOnNotUptodateHeader>
+                    <canUpdateCopyright>true</canUpdateCopyright>
+                    <canUpdateDescription>true</canUpdateDescription>
+                    <canUpdateLicense>true</canUpdateLicense>
+                    <roots>
+                        <root>src/main/java</root>
+                        <root>src/test</root>
+                    </roots>
                 </configuration>
                 <executions>
                     <execution>
@@ -122,13 +132,6 @@
                             <goal>update-file-header</goal>
                         </goals>
                         <phase>process-sources</phase>
-                        <configuration>
-                            <licenseName>gpl_v3</licenseName>
-                            <roots>
-                                <root>src/main/java</root>
-                                <root>src/test</root>
-                            </roots>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>download-licenses</id>
@@ -138,33 +141,41 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <configuration>
+                    <executable>java</executable>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>true</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
+                    <goals>deploy</goals>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>onejar-maven-plugin.googlecode.com</id>
-            <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
-        </pluginRepository>
-    </pluginRepositories>
 	
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dependency.jul.version>[1.1,1.2-SNAPSHOT)</dependency.jul.version>
-        <dependency.bco.registry.version>[1.1,1.2-SNAPSHOT)</dependency.bco.registry.version>
+        <target.java.version>1.8</target.java.version>
+        <source.java.version>1.8</source.java.version>
+        <dependency.jul.version>1.4-SNAPSHOT</dependency.jul.version>
+        <dependency.bco.registry.version>1.4-SNAPSHOT</dependency.bco.registry.version>
     </properties>
-
-    <scm>
-        <connection>scm:git:http://projects.cit-ec.uni-bielefeld.de/git/csra-stud.caoraup.git</connection>
-        <developerConnection>scm:git:http://projects.cit-ec.uni-bielefeld.de/git/csra-stud.caoraup.git</developerConnection>
-        <url>http://projects.cit-ec.uni-bielefeld.de/git/csra-stud.caoraup.git</url>
-    </scm>
 
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.10</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -184,7 +195,7 @@
         </dependency>
         <dependency>
             <groupId>org.openbase</groupId>
-            <artifactId>jul.extension.rct</artifactId>
+            <artifactId>jul.extension.rst.processing</artifactId>
             <version>${dependency.jul.version}</version>
         </dependency>
         <dependency>
@@ -194,25 +205,9 @@
         </dependency>
         <dependency>
             <groupId>org.openbase.bco</groupId>
-            <artifactId>registry.device.remote</artifactId>
+            <artifactId>registry.remote</artifactId>
             <version>${dependency.bco.registry.version}</version>
             <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.openbase.bco</groupId>
-            <artifactId>registry.location.remote</artifactId>
-            <version>${dependency.bco.registry.version}</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.openbase.bco</groupId>
-            <artifactId>manager.location.remote</artifactId>
-            <version>${dependency.bco.registry.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openbase.bco</groupId>
-            <artifactId>manager.device.remote</artifactId>
-            <version>${dependency.bco.registry.version}</version>
         </dependency>
         <dependency>
             <groupId>java3d</groupId>
@@ -221,4 +216,22 @@
             <type>jar</type>
         </dependency>
     </dependencies>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>onejar-maven-plugin.googlecode.com</id>
+            <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
+        </pluginRepository>
+    </pluginRepositories>
+    
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+</distributionManagement>
 </project>

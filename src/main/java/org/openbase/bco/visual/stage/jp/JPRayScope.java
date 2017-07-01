@@ -1,10 +1,10 @@
-package de.citec.csra.jp;
+package org.openbase.bco.visual.stage.jp;
 
 /*
  * #%L
- * ceoraup
+ * BCO Visual Stage
  * %%
- * Copyright (C) 2016 citec
+ * Copyright (C) 2017 openbase.org
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -29,20 +29,20 @@ import rsb.Scope;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de>Thoren Huppke</a>
  */
-public class JPPostureScope extends AbstractJPScope {
-    public final static String[] COMMAND_IDENTIFIERS = {"--ps", "--posture-in-scope"};
+public class JPRayScope extends AbstractJPScope {
+    public final static String[] COMMAND_IDENTIFIERS = {"--rs", "--ray-in-scope"};
     
-    public JPPostureScope(){
+    public JPRayScope(){
         super(COMMAND_IDENTIFIERS);
     }
 
     @Override
     public String getDescription() {
-        return "Defines the scope used to receive posture data.";
+        return "Defines the scope used to receive pointing ray data.";
     }
 
     @Override
     protected Scope getPropertyDefaultValue() throws JPNotAvailableException {
-        return new Scope("/merged_skeletons");
+        return new Scope("/pointing_rays");
     }
 }
