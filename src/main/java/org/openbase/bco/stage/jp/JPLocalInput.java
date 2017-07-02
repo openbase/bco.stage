@@ -1,4 +1,4 @@
-package org.openbase.bco.visual.stage.visualization;
+package org.openbase.bco.stage.jp;
 
 /*
  * #%L
@@ -22,43 +22,22 @@ package org.openbase.bco.visual.stage.visualization;
  * #L%
  */
 
+import org.openbase.jps.preset.AbstractJPBoolean;
+
 /**
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de>Thoren Huppke</a>
  */
-public enum Joints {
-    SpineBase(0),
-    SpineMid(1),
-    Neck(2),
-    Head(3),
-    ShoulderLeft(4),
-    ElbowLeft(5),
-    WristLeft(6),
-    HandLeft(7),
-    ShoulderRight(8),
-    ElbowRight(9),
-    WristRight(10),
-    HandRight(11),
-    HipLeft(12),
-    KneeLeft(13),
-    AnkleLeft(14),
-    FootLeft(15),
-    HipRight(16),
-    KneeRight(17),
-    AnkleRight(18),
-    FootRight(19),
-    SpineShoulder(20),
-    HandTipLeft(21),
-    ThumbLeft(22),
-    HandTipRight(23),
-    ThumbRight(24);
+public class JPLocalInput extends AbstractJPBoolean{
+    public final static String[] COMMAND_IDENTIFIERS = {"--li", "--local-input"};
 
-    private final int value;
-
-    Joints(final int newValue) {
-        value = newValue;
+    public JPLocalInput() {
+        super(COMMAND_IDENTIFIERS);
     }
 
-    public int getValue() { return value; }
+    @Override
+    public String getDescription() {
+        return "If true, the program will try to receive the Input via socket and localhost.";
+    }
     
 }

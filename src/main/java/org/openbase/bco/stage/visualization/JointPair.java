@@ -1,6 +1,11 @@
-package org.openbase.bco.visual.stage.jp;
-
 /*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.openbase.bco.stage.visualization;
+
+/*-
  * #%L
  * BCO Visual Stage
  * %%
@@ -22,22 +27,24 @@ package org.openbase.bco.visual.stage.jp;
  * #L%
  */
 
-import org.openbase.jps.preset.AbstractJPBoolean;
-
 /**
  *
- * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de>Thoren Huppke</a>
+ * @author thoren
  */
-public class JPLocalInput extends AbstractJPBoolean{
-    public final static String[] COMMAND_IDENTIFIERS = {"--li", "--local-input"};
+public class JointPair {
+    private final Joints joint1;
+    private final Joints joint2;
 
-    public JPLocalInput() {
-        super(COMMAND_IDENTIFIERS);
+    public JointPair(Joints joint1, Joints joint2) {
+        this.joint1 = joint1;
+        this.joint2 = joint2;
     }
 
-    @Override
-    public String getDescription() {
-        return "If true, the program will try to receive the Input via socket and localhost.";
+    public Joints getJoint1() {
+        return joint1;
     }
-    
+
+    public Joints getJoint2() {
+        return joint2;
+    }
 }

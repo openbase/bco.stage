@@ -1,4 +1,4 @@
-package org.openbase.bco.visual.stage.jp;
+package org.openbase.bco.stage.jp;
 
 /*
  * #%L
@@ -22,34 +22,27 @@ package org.openbase.bco.visual.stage.jp;
  * #L%
  */
 
-import java.util.List;
-import org.openbase.jps.core.AbstractJavaProperty;
-import org.openbase.jps.exception.JPBadArgumentException;
+import org.openbase.jps.exception.JPNotAvailableException;
 import rsb.Scope;
 
 /**
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de>Thoren Huppke</a>
  */
-public abstract class AbstractJPScope extends AbstractJavaProperty<Scope> {
-    public final static String[] ARGUMENT_IDENTIFIERS = {"SCOPE"};
+public class JPRayScope extends AbstractJPScope {
+    public final static String[] COMMAND_IDENTIFIERS = {"--rs", "--ray-in-scope"};
     
-    public AbstractJPScope(String[] commandIdentifiers) {
-        super(commandIdentifiers);
+    public JPRayScope(){
+        super(COMMAND_IDENTIFIERS);
     }
 
     @Override
-    protected String[] generateArgumentIdentifiers() {
-        return ARGUMENT_IDENTIFIERS;
+    public String getDescription() {
+        return "Defines the scope used to receive pointing ray data.";
     }
 
     @Override
-    protected Scope parse(List<String> arguments) throws JPBadArgumentException {
-        String oneArgumentResult = getOneArgumentResult();
-        try {
-            return new Scope(oneArgumentResult);
-        } catch(IllegalArgumentException e){
-            throw new JPBadArgumentException("Given Scope[" + oneArgumentResult + "] is not a Scope.", e);
-        }
+    protected Scope getPropertyDefaultValue() throws JPNotAvailableException {
+        return new Scope("/pointing_rays");
     }
 }

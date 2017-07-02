@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package org.openbase.bco.visual.stage.visualization;
+package org.openbase.bco.stage.visualization;
 
-/*-
+/*
  * #%L
  * BCO Visual Stage
  * %%
@@ -29,22 +24,41 @@ package org.openbase.bco.visual.stage.visualization;
 
 /**
  *
- * @author thoren
+ * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de>Thoren Huppke</a>
  */
-public class JointPair {
-    private final Joints joint1;
-    private final Joints joint2;
+public enum Joints {
+    SpineBase(0),
+    SpineMid(1),
+    Neck(2),
+    Head(3),
+    ShoulderLeft(4),
+    ElbowLeft(5),
+    WristLeft(6),
+    HandLeft(7),
+    ShoulderRight(8),
+    ElbowRight(9),
+    WristRight(10),
+    HandRight(11),
+    HipLeft(12),
+    KneeLeft(13),
+    AnkleLeft(14),
+    FootLeft(15),
+    HipRight(16),
+    KneeRight(17),
+    AnkleRight(18),
+    FootRight(19),
+    SpineShoulder(20),
+    HandTipLeft(21),
+    ThumbLeft(22),
+    HandTipRight(23),
+    ThumbRight(24);
 
-    public JointPair(Joints joint1, Joints joint2) {
-        this.joint1 = joint1;
-        this.joint2 = joint2;
+    private final int value;
+
+    Joints(final int newValue) {
+        value = newValue;
     }
 
-    public Joints getJoint1() {
-        return joint1;
-    }
-
-    public Joints getJoint2() {
-        return joint2;
-    }
+    public int getValue() { return value; }
+    
 }

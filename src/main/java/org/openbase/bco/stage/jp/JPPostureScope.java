@@ -1,4 +1,4 @@
-package org.openbase.bco.visual.stage.jp;
+package org.openbase.bco.stage.jp;
 
 /*
  * #%L
@@ -29,20 +29,20 @@ import rsb.Scope;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de>Thoren Huppke</a>
  */
-public class JPRayScope extends AbstractJPScope {
-    public final static String[] COMMAND_IDENTIFIERS = {"--rs", "--ray-in-scope"};
+public class JPPostureScope extends AbstractJPScope {
+    public final static String[] COMMAND_IDENTIFIERS = {"--ps", "--posture-in-scope"};
     
-    public JPRayScope(){
+    public JPPostureScope(){
         super(COMMAND_IDENTIFIERS);
     }
 
     @Override
     public String getDescription() {
-        return "Defines the scope used to receive pointing ray data.";
+        return "Defines the scope used to receive posture data.";
     }
 
     @Override
     protected Scope getPropertyDefaultValue() throws JPNotAvailableException {
-        return new Scope("/pointing_rays");
+        return new Scope("/merged_skeletons");
     }
 }

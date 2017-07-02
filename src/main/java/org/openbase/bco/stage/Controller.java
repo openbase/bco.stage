@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.openbase.bco.visual.stage;
+package org.openbase.bco.stage;
 
 /*-
  * #%L
@@ -27,7 +27,7 @@ package org.openbase.bco.visual.stage;
  * #L%
  */
 
-import org.openbase.bco.visual.stage.visualization.GUIManager;
+import org.openbase.bco.stage.visualization.GUIManager;
 import javafx.stage.Stage;
 import org.slf4j.LoggerFactory;
 import rsb.AbstractEventHandler;

@@ -1,4 +1,4 @@
-package org.openbase.bco.visual.stage;
+package org.openbase.bco.stage;
 
 /*
  * #%L
@@ -22,13 +22,12 @@ package org.openbase.bco.visual.stage;
  * #L%
  */
 
-import org.openbase.bco.visual.stage.jp.JPPostureScope;
-import org.openbase.bco.visual.stage.jp.JPLocalInput;
-import org.openbase.bco.visual.stage.jp.JPRayScope;
-import org.openbase.bco.visual.stage.rsb.RSBConnection;
+import org.openbase.bco.stage.jp.JPPostureScope;
+import org.openbase.bco.stage.jp.JPLocalInput;
+import org.openbase.bco.stage.jp.JPRayScope;
+import org.openbase.bco.stage.rsb.RSBConnection;
 import java.util.List;
 import javafx.application.Application;
-import javafx.stage.Stage;
 import org.openbase.jps.core.JPService;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
@@ -38,16 +37,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author cmcastil
  */
-public class App extends Application {
+public class Stage extends Application {
 
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(App.class);
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Stage.class);
     private RSBConnection rsbConnection;
     private Controller controller;
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(javafx.stage.Stage primaryStage) {
         /* Setup JPService */
-        JPService.setApplicationName(App.class);
+        JPService.setApplicationName(Stage.class);
         JPService.registerProperty(JPPostureScope.class);
         JPService.registerProperty(JPRayScope.class);
         JPService.registerProperty(JPLocalInput.class);

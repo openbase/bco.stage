@@ -2,12 +2,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.openbase.bco</groupId>
-    <artifactId>visual-stage</artifactId>
+    <artifactId>stage</artifactId>
     <version>1.4-SNAPSHOT</version>
 
-    <name>BCO Visual Stage</name>
+    <name>BCO Stage</name>
     <inceptionYear>2017</inceptionYear>
-    <description>A software that presents a 3d-representation of the appartment, tracked skeletons, detected pointing rays and controllable objects.</description>
+    <description>A software that presents a 3d-representation of the smart environment tracked skeletons, detected pointing rays and controllable objects.</description>
     
     <!--<url>https://github.com/divinecooperation/bco.visual-stage/wiki</url>-->
     
@@ -70,8 +70,8 @@
                 <configuration>
                     <programs>
                         <program>
-                            <mainClass>org.openbase.bco.visual_stage.App</mainClass>
-                            <id>visual-stage</id>
+                            <mainClass>org.openbase.bco.stage.Stage</mainClass>
+                            <id>bco-stage</id>
                             <platforms>
                                 <platform>unix</platform>
                             </platforms>
@@ -86,7 +86,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.openbase.bco.visual_stage.App</mainClass>
+                            <mainClass>org.openbase.bco.stage.Stage</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

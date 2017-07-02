@@ -1,4 +1,4 @@
-package org.openbase.bco.visual.stage.jp;
+package org.openbase.bco.stage.jp;
 
 /*
  * #%L
@@ -22,27 +22,34 @@ package org.openbase.bco.visual.stage.jp;
  * #L%
  */
 
-import org.openbase.jps.exception.JPNotAvailableException;
+import java.util.List;
+import org.openbase.jps.core.AbstractJavaProperty;
+import org.openbase.jps.exception.JPBadArgumentException;
 import rsb.Scope;
 
 /**
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de>Thoren Huppke</a>
  */
-public class JPPostureScope extends AbstractJPScope {
-    public final static String[] COMMAND_IDENTIFIERS = {"--ps", "--posture-in-scope"};
+public abstract class AbstractJPScope extends AbstractJavaProperty<Scope> {
+    public final static String[] ARGUMENT_IDENTIFIERS = {"SCOPE"};
     
-    public JPPostureScope(){
-        super(COMMAND_IDENTIFIERS);
+    public AbstractJPScope(String[] commandIdentifiers) {
+        super(commandIdentifiers);
     }
 
     @Override
-    public String getDescription() {
-        return "Defines the scope used to receive posture data.";
+    protected String[] generateArgumentIdentifiers() {
+        return ARGUMENT_IDENTIFIERS;
     }
 
     @Override
-    protected Scope getPropertyDefaultValue() throws JPNotAvailableException {
-        return new Scope("/merged_skeletons");
+    protected Scope parse(List<String> arguments) throws JPBadArgumentException {
+        String oneArgumentResult = getOneArgumentResult();
+        try {
+            return new Scope(oneArgumentResult);
+        } catch(IllegalArgumentException e){
+            throw new JPBadArgumentException("Given Scope[" + oneArgumentResult + "] is not a Scope.", e);
+        }
     }
 }
