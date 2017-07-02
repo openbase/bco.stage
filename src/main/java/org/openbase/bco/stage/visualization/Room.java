@@ -7,7 +7,7 @@ package org.openbase.bco.stage.visualization;
 
 /*-
  * #%L
- * BCO Visual Stage
+ * BCO Stage
  * %%
  * Copyright (C) 2017 openbase.org
  * %%

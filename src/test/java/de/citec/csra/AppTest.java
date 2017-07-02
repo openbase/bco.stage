@@ -2,7 +2,7 @@ package de.citec.csra;
 
 /*
  * #%L
- * BCO Visual Stage
+ * BCO Stage
  * %%
  * Copyright (C) 2017 openbase.org
  * %%

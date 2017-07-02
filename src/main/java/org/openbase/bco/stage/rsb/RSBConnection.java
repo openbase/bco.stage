@@ -2,7 +2,7 @@ package org.openbase.bco.stage.rsb;
 
 /*
  * #%L
- * BCO Visual Stage
+ * BCO Stage
  * %%
  * Copyright (C) 2017 openbase.org
  * %%

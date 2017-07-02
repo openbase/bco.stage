@@ -9,7 +9,7 @@
     <inceptionYear>2017</inceptionYear>
     <description>A software that presents a 3d-representation of the smart environment tracked skeletons, detected pointing rays and controllable objects.</description>
     
-    <!--<url>https://github.com/divinecooperation/bco.visual-stage/wiki</url>-->
+    <url>https://github.com/openbase/bco.stage/wiki</url>
     
     <organization>
         <name>openbase.org</name>
@@ -39,9 +39,9 @@
     <packaging>jar</packaging>
     
     <scm>
-        <connection>scm:git:https://github.com/openbase/bco.visual-stage.git</connection>
-        <developerConnection>scm:git:https://github.com/openbase/bco.visual-stage.git</developerConnection>
-        <url>https://github.com/openbase/bco.visual-stage.git</url>
+        <connection>scm:git:https://github.com/openbase/bco.stage.git</connection>
+        <developerConnection>scm:git:https://github.com/openbase/bco.stage.git</developerConnection>
+        <url>https://github.com/openbase/bco.stage.git</url>
     </scm>
 
     <build>
