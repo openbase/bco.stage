@@ -63,11 +63,11 @@ public class Controller extends AbstractEventHandler{
         if(event.getData() instanceof TrackedPostures3DFloat){
             LOGGER.trace("New TrackedPostures3DFloat event received.");
             TrackedPostures3DFloat postures = (TrackedPostures3DFloat) event.getData();
-            guiManager.updateOrCreateSkeletons(postures);
+            guiManager.updateSkeletonData(postures);
         } else if(event.getData() instanceof PointingRay3DFloatCollection){
             LOGGER.trace("New PointingRay3DFloatCollection event received.");
             PointingRay3DFloatCollection pointingRays = (PointingRay3DFloatCollection) event.getData();
-            guiManager.updateOrCreateRays(pointingRays);
+            guiManager.updateRayData(pointingRays);
         }
     }
 }

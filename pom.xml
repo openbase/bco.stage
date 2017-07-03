@@ -3,7 +3,7 @@
 
     <groupId>org.openbase.bco</groupId>
     <artifactId>stage</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
 
     <name>BCO Stage</name>
     <inceptionYear>2017</inceptionYear>
@@ -21,6 +21,9 @@
             <id>thuppke</id>
             <name>Thoren Huppke</name>
             <email>thuppke@techfak.uni-bielefeld.de</email>
+            <url>https://github.com/THuppke</url>
+            <organization>openbase.org</organization>
+            <organizationUrl>https://github.com/openbase</organizationUrl>
             <roles>
                 <role>architect</role>
                 <role>developer</role>

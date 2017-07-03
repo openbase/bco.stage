@@ -1,4 +1,4 @@
-package pointing;
+package org.openbase.bco.stage.pointing;
 
 /*
  * #%L
