@@ -29,6 +29,7 @@ package org.openbase.bco.stage.visualization;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
@@ -38,6 +39,9 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.openbase.jps.core.JPService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rst.tracking.PointingRay3DFloatCollectionType;
 import rst.tracking.TrackedPosture3DFloatType;
 import rst.tracking.TrackedPostures3DFloatType;
@@ -47,6 +51,7 @@ import rst.tracking.TrackedPostures3DFloatType;
  * @author thoren
  */
 public class GUIManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GUIManager.class);
     // TODO 
     // -Fix bugs: body parts and rays floating around + Exception in thread "JavaFX Application Thread" java.lang.ArrayIndexOutOfBoundsException
     // -Visualize objects
@@ -63,6 +68,7 @@ public class GUIManager {
     private final MaterialManager mm = new MaterialManager();
     
     private void connectCamera(Scene scene){
+        LOGGER.debug("Connecting camera to the scene.");
         scene.setOnMousePressed(camera);
         scene.setOnMouseDragged(camera);
         scene.setOnKeyPressed(new EventHandler<KeyEvent>(){
@@ -82,7 +88,7 @@ public class GUIManager {
     }
 
     private void buildAxes() {
-        System.out.println("buildAxes()");
+        LOGGER.debug("Creating axes visualization.");
         
         final Line xLine = new Line(Line.LineType.BOX, AXIS_WIDTH, mm.red, new Point3D(-AXIS_LENGTH,0,0), new Point3D(AXIS_LENGTH,0,0));
         final Line yLine = new Line(Line.LineType.BOX, AXIS_WIDTH, mm.green, new Point3D(0,-AXIS_LENGTH,0), new Point3D(0,AXIS_LENGTH,0));
@@ -94,6 +100,8 @@ public class GUIManager {
     }
     
     private void buildSkeletons() {
+        LOGGER.debug("Creating skeleton visualizations.");
+        
         for (int i = 0; i < skeletons.length; i++){
             skeletons[i] = new Skeleton();
             world.getChildren().add(skeletons[i]);
@@ -102,6 +110,7 @@ public class GUIManager {
     }
     
     public GUIManager(Stage primaryStage){
+        LOGGER.info("Setting up the 3D - scene.");
         camera = new MoveableCamera();
 
         root.getChildren().add(world);
@@ -115,8 +124,8 @@ public class GUIManager {
         Scene scene = new Scene(root, 1024, 768, true);
         connectCamera(scene);
         scene.setFill(Color.GREY);
-
-        primaryStage.setTitle("Skeleton Animator");
+        
+        primaryStage.setTitle(JPService.getApplicationName());
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -128,8 +137,9 @@ public class GUIManager {
         for(int i = 0; i < postures.getPostureCount(); i++){
             TrackedPosture3DFloatType.TrackedPosture3DFloat posture = postures.getPosture(i);
             if(posture.getConfidenceCount() > 0){
-                skeletons[i].setVisible(true);
+//                skeletons[i].setVisible(false);
                 skeletons[i].updatePositions(posture);
+                skeletons[i].setVisible(true);
             } else {
                 skeletons[i].setVisible(false);
             }
@@ -137,9 +147,10 @@ public class GUIManager {
     }
     
     public void updateOrCreateRays(PointingRay3DFloatCollectionType.PointingRay3DFloatCollection pointingRays){
-        System.out.println("updateRays");
+        LOGGER.trace("Updating or creating rays.");
         int difference = pointingRays.getElementCount() - rays.size();
         if(difference > 0){
+            LOGGER.trace("Adding new rays.");
             for(int i = 0; i < difference; i++){
                 Ray r = new Ray();
                 rays.add(r);
@@ -150,6 +161,7 @@ public class GUIManager {
                 });
             }
         } else {
+            LOGGER.trace("Removing rays.");
             for(int i = 0; i < -difference; i++){
                 Ray r = rays.get(pointingRays.getElementCount());
                 Platform.runLater(new Runnable() {
@@ -160,8 +172,11 @@ public class GUIManager {
                 rays.remove(pointingRays.getElementCount());
             }
         }
+        LOGGER.trace("Updating existing rays.");
         for(int i = 0; i < pointingRays.getElementCount(); i++){
+//            rays.get(i).setVisible(false);
             rays.get(i).update(pointingRays.getElement(i));
+//            rays.get(i).setVisible(true);
         }
     }
 }

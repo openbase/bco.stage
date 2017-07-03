@@ -31,6 +31,7 @@ import javafx.application.Application;
 import org.openbase.jps.core.JPService;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -38,15 +39,15 @@ import org.slf4j.LoggerFactory;
  * @author cmcastil
  */
 public class Stage extends Application {
+    public static final String APPLICATION_NAME = "BCO Stage";
 
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Stage.class);
-    private RSBConnection rsbConnection;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Stage.class);
     private Controller controller;
 
     @Override
     public void start(javafx.stage.Stage primaryStage) {
         /* Setup JPService */
-        JPService.setApplicationName(Stage.class);
+        JPService.setApplicationName(APPLICATION_NAME);
         JPService.registerProperty(JPPostureScope.class);
         JPService.registerProperty(JPRayScope.class);
         JPService.registerProperty(JPLocalInput.class);
@@ -55,17 +56,7 @@ public class Stage extends Application {
         JPService.parseAndExitOnError(args);
 //        JPService.printHelp();
         
-       // setUserAgentStylesheet(STYLESHEET_MODENA);
-        
         controller = new Controller(primaryStage);
-        
-        try {
-            
-            rsbConnection = new RSBConnection(controller);
-        } catch (Exception ex) {
-            ExceptionPrinter.printHistory(new CouldNotPerformException("App failed", ex), LOGGER);
-            System.exit(255);
-        }
     }
 
     /**

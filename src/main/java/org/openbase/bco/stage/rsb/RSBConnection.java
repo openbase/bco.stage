@@ -33,6 +33,7 @@ import rsb.AbstractEventHandler;
 import rsb.Factory;
 import rsb.Listener;
 import rsb.RSBException;
+import rsb.Scope;
 import rsb.config.ParticipantConfig;
 import rsb.config.TransportConfig;
 import rsb.converter.DefaultConverterRepository;
@@ -49,12 +50,16 @@ public class RSBConnection {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(RSBConnection.class);
     private Listener skeletonListener;
     private Listener rayListener;
+    private Scope postureScope;
+    private Scope rayScope;
     
     public RSBConnection(AbstractEventHandler handler) throws CouldNotPerformException {
-        initializeListener(handler);
+        LOGGER.info("Initializing RSB connection.");
+        initializeListeners(handler);
     }
     
     public void deactivate() throws CouldNotPerformException{
+        LOGGER.info("Deactivating RSB connection.");
         try{
             skeletonListener.deactivate();
             rayListener.deactivate();
@@ -63,7 +68,8 @@ public class RSBConnection {
         } 
     }
     
-    private void initializeListener(AbstractEventHandler handler) throws CouldNotPerformException{
+    private void initializeListeners(AbstractEventHandler handler) throws CouldNotPerformException{
+        LOGGER.debug("Registering converters.");
         final ProtocolBufferConverter<TrackedPostures3DFloat> postureConverter = new ProtocolBufferConverter<>(
                     TrackedPostures3DFloat.getDefaultInstance());
         DefaultConverterRepository.getDefaultConverterRepository()
@@ -76,12 +82,17 @@ public class RSBConnection {
         
         
         try {
+            postureScope = JPService.getProperty(JPPostureScope.class).getValue();
+            rayScope = JPService.getProperty(JPRayScope.class).getValue();
+            LOGGER.info("Initializing RSB Posture Listener on scope: " + postureScope);
+            LOGGER.info("Initializing RSB Ray Listener on scope: " + rayScope);
             if(JPService.getProperty(JPLocalInput.class).getValue()){
-                skeletonListener = Factory.getInstance().createListener(JPService.getProperty(JPPostureScope.class).getValue(), getLocalConfig());
-                rayListener = Factory.getInstance().createListener(JPService.getProperty(JPRayScope.class).getValue(), getLocalConfig());
+                LOGGER.warn("RSB input set to socket and localhost.");
+                skeletonListener = Factory.getInstance().createListener(postureScope, getLocalConfig());
+                rayListener = Factory.getInstance().createListener(rayScope, getLocalConfig());
             } else {
-                skeletonListener = Factory.getInstance().createListener(JPService.getProperty(JPPostureScope.class).getValue());
-                rayListener = Factory.getInstance().createListener(JPService.getProperty(JPRayScope.class).getValue());
+                skeletonListener = Factory.getInstance().createListener(postureScope);
+                rayListener = Factory.getInstance().createListener(rayScope);
             }
             skeletonListener.activate();
             rayListener.activate();

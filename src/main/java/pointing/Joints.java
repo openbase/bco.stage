@@ -1,4 +1,4 @@
-package org.openbase.bco.stage.visualization;
+package pointing;
 
 /*
  * #%L

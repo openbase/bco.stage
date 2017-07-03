@@ -29,6 +29,10 @@ package org.openbase.bco.stage;
 
 import org.openbase.bco.stage.visualization.GUIManager;
 import javafx.stage.Stage;
+import org.openbase.bco.stage.rsb.RSBConnection;
+import org.openbase.jul.exception.CouldNotPerformException;
+import org.openbase.jul.exception.printer.ExceptionPrinter;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rsb.AbstractEventHandler;
 import rsb.Event;
@@ -40,19 +44,28 @@ import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
  * @author thoren
  */
 public class Controller extends AbstractEventHandler{
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Controller.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
     private final GUIManager guiManager;
+    private RSBConnection rsbConnection;
     
     public Controller(Stage primaryStage){
         guiManager = new GUIManager(primaryStage);
+        try {
+            rsbConnection = new RSBConnection(this);
+        } catch (Exception ex) {
+            ExceptionPrinter.printHistory(new CouldNotPerformException("App failed", ex), LOGGER);
+            System.exit(255);
+        }
     }
     
     @Override
     public void handleEvent(final Event event) {
         if(event.getData() instanceof TrackedPostures3DFloat){
+            LOGGER.trace("New TrackedPostures3DFloat event received.");
             TrackedPostures3DFloat postures = (TrackedPostures3DFloat) event.getData();
             guiManager.updateOrCreateSkeletons(postures);
         } else if(event.getData() instanceof PointingRay3DFloatCollection){
+            LOGGER.trace("New PointingRay3DFloatCollection event received.");
             PointingRay3DFloatCollection pointingRays = (PointingRay3DFloatCollection) event.getData();
             guiManager.updateOrCreateRays(pointingRays);
         }
