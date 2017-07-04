@@ -27,8 +27,8 @@ package org.openbase.bco.stage.visualization;
  * #L%
  */
 
-import pointing.Joints;
-import pointing.JointPair;
+import org.openbase.bco.stage.pointing.Joints;
+import org.openbase.bco.stage.pointing.JointPair;
 import java.util.List;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;

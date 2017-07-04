@@ -29,8 +29,7 @@ package org.openbase.bco.stage.visualization;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.application.Application;
-import javafx.application.Platform;
+import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.DepthTest;
@@ -42,9 +41,9 @@ import javafx.stage.Stage;
 import org.openbase.jps.core.JPService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rst.tracking.PointingRay3DFloatCollectionType;
-import rst.tracking.TrackedPosture3DFloatType;
-import rst.tracking.TrackedPostures3DFloatType;
+import rst.tracking.PointingRay3DFloatCollectionType.PointingRay3DFloatCollection;
+import rst.tracking.TrackedPosture3DFloatType.TrackedPosture3DFloat;
+import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
 
 /**
  *
@@ -53,8 +52,8 @@ import rst.tracking.TrackedPostures3DFloatType;
 public class GUIManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(GUIManager.class);
     // TODO 
-    // -Fix bugs: body parts and rays floating around + Exception in thread "JavaFX Application Thread" java.lang.ArrayIndexOutOfBoundsException
     // -Visualize objects
+    // -Visualize selected objects
     private static final double AXIS_LENGTH = 250.0;
     private static final double AXIS_WIDTH = 0.03;
     private final Skeleton[] skeletons = new Skeleton[6];
@@ -66,6 +65,53 @@ public class GUIManager {
     private final MoveableCamera camera;
     
     private final MaterialManager mm = new MaterialManager();
+    private final AnimationTimer mainLoop;
+    
+    private TrackedPostures3DFloat skeletonData;
+    private boolean skeletonDataUpdated = false;
+    private PointingRay3DFloatCollection rayData;
+    private boolean rayDataUpdated = false;
+    
+    public GUIManager(Stage primaryStage){
+        LOGGER.info("Setting up the 3D - scene.");
+        camera = new MoveableCamera();
+
+        root.getChildren().add(world);
+        root.setDepthTest(DepthTest.ENABLE);
+
+        buildAxes();
+        world.getChildren().add(new Room());
+        buildSkeletons();
+
+        Scene scene = new Scene(root, 1024, 768, true);
+        connectCamera(scene);
+        scene.setFill(Color.GREY);
+        
+        primaryStage.setTitle(JPService.getApplicationName());
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        scene.setCamera(camera);
+        
+        mainLoop = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                updateOrCreateSkeletons();
+                updateOrCreateRays();
+            }
+        };
+        mainLoop.start();
+    }
+    
+    public synchronized void updateSkeletonData(TrackedPostures3DFloat postures){
+        skeletonData = postures;
+        skeletonDataUpdated = true;
+    }
+    
+    public synchronized void updateRayData(PointingRay3DFloatCollection pointingRays){
+        rayData = pointingRays;
+        rayDataUpdated = true;
+    }
     
     private void connectCamera(Scene scene){
         LOGGER.debug("Connecting camera to the scene.");
@@ -109,74 +155,43 @@ public class GUIManager {
         }
     }
     
-    public GUIManager(Stage primaryStage){
-        LOGGER.info("Setting up the 3D - scene.");
-        camera = new MoveableCamera();
-
-        root.getChildren().add(world);
-        root.setDepthTest(DepthTest.ENABLE);
-
-//        buildScene();
-        buildAxes();
-        world.getChildren().add(new Room());
-        buildSkeletons();
-
-        Scene scene = new Scene(root, 1024, 768, true);
-        connectCamera(scene);
-        scene.setFill(Color.GREY);
-        
-        primaryStage.setTitle(JPService.getApplicationName());
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
-        scene.setCamera(camera);
-        
-    }
-    
-    public void updateOrCreateSkeletons(TrackedPostures3DFloatType.TrackedPostures3DFloat postures){
-        for(int i = 0; i < postures.getPostureCount(); i++){
-            TrackedPosture3DFloatType.TrackedPosture3DFloat posture = postures.getPosture(i);
+    private synchronized void updateOrCreateSkeletons(){
+        if(!skeletonDataUpdated) return;
+        for(int i = 0; i < skeletonData.getPostureCount(); i++){
+            TrackedPosture3DFloat posture = skeletonData.getPosture(i);
             if(posture.getConfidenceCount() > 0){
-//                skeletons[i].setVisible(false);
                 skeletons[i].updatePositions(posture);
                 skeletons[i].setVisible(true);
             } else {
                 skeletons[i].setVisible(false);
             }
         }
+        skeletonDataUpdated = false;
     }
     
-    public void updateOrCreateRays(PointingRay3DFloatCollectionType.PointingRay3DFloatCollection pointingRays){
+    private synchronized void updateOrCreateRays(){
+        if(!rayDataUpdated) return;
         LOGGER.trace("Updating or creating rays.");
-        int difference = pointingRays.getElementCount() - rays.size();
+        int difference = rayData.getElementCount() - rays.size();
         if(difference > 0){
             LOGGER.trace("Adding new rays.");
             for(int i = 0; i < difference; i++){
                 Ray r = new Ray();
                 rays.add(r);
-                Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                        world.getChildren().add(r);
-                    }
-                });
+                world.getChildren().add(r);
             }
         } else {
             LOGGER.trace("Removing rays.");
             for(int i = 0; i < -difference; i++){
-                Ray r = rays.get(pointingRays.getElementCount());
-                Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                        world.getChildren().remove(r);
-                    }
-                });
-                rays.remove(pointingRays.getElementCount());
+                Ray r = rays.get(rayData.getElementCount());
+                world.getChildren().remove(r);
+                rays.remove(rayData.getElementCount());
             }
         }
         LOGGER.trace("Updating existing rays.");
-        for(int i = 0; i < pointingRays.getElementCount(); i++){
-//            rays.get(i).setVisible(false);
-            rays.get(i).update(pointingRays.getElement(i));
-//            rays.get(i).setVisible(true);
+        for(int i = 0; i < rayData.getElementCount(); i++){
+            rays.get(i).update(rayData.getElement(i));
         }
+        rayDataUpdated = false;
     }
 }

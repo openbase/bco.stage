@@ -42,6 +42,7 @@ import javafx.scene.transform.Translate;
  * @author thoren
  */
 public class MoveableCamera extends PerspectiveCamera implements EventHandler{
+    //TODO initial position and rotation via JPService.
     private static final double CAMERA_INITIAL_X = -7.0;
     private static final double CAMERA_INITIAL_Y = 8.0;
     private static final double CAMERA_INITIAL_Z = 3.1;
@@ -75,7 +76,7 @@ public class MoveableCamera extends PerspectiveCamera implements EventHandler{
         this.setFarClip(CAMERA_FAR_CLIP);
         this.getTransforms().addAll(cameraTranslate, PRE_ROTATE, cameraRotateY, cameraRotateX);
         
-        AnimationTimer gameLoop = new AnimationTimer() {
+        AnimationTimer movementLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 Rotate rotation = new Rotate(-cameraRotateY.getAngle(), Rotate.Z_AXIS);
@@ -96,7 +97,7 @@ public class MoveableCamera extends PerspectiveCamera implements EventHandler{
                 cameraTranslate.setZ(cameraTranslate.getZ() + zMovement*MOVEMENT_FACTOR_VERT);
             }
         };
-        gameLoop.start();
+        movementLoop.start();
     }
     
     @Override
@@ -134,11 +135,24 @@ public class MoveableCamera extends PerspectiveCamera implements EventHandler{
                 mouseDeltaY = (mousePosY - mouseOldY); 
                 
                 if (me.isPrimaryButtonDown()) {
-                    cameraRotateX.setAngle(cameraRotateX.getAngle() - mouseDeltaY*MOUSE_SPEED*ROTATION_SPEED);  
-                    cameraRotateY.setAngle(cameraRotateY.getAngle() + mouseDeltaX*MOUSE_SPEED*ROTATION_SPEED);  
+                    setRotations(getRotateXAngle() - mouseDeltaY*MOUSE_SPEED*ROTATION_SPEED, 
+                            getRotateYAngle() + mouseDeltaX*MOUSE_SPEED*ROTATION_SPEED);
                 }
             }
         }
+    }
+    
+    private synchronized void setRotations(double rotateXAngle, double rotateYAngle){
+        cameraRotateX.setAngle(rotateXAngle);
+        cameraRotateY.setAngle(rotateYAngle);
+    }
+    
+    private synchronized double getRotateXAngle(){
+        return cameraRotateX.getAngle();
+    }
+    
+    private synchronized double getRotateYAngle(){
+        return cameraRotateY.getAngle();
     }
     
     public class KeyState{
@@ -175,31 +189,29 @@ public class MoveableCamera extends PerspectiveCamera implements EventHandler{
             }
         }
 
-        public boolean iswPressed() {
+        public synchronized boolean iswPressed() {
             return wPressed;
         }
 
-        public boolean isaPressed() {
+        public synchronized boolean isaPressed() {
             return aPressed;
         }
 
-        public boolean issPressed() {
+        public synchronized boolean issPressed() {
             return sPressed;
         }
 
-        public boolean isdPressed() {
+        public synchronized boolean isdPressed() {
             return dPressed;
         }
 
-        public boolean isSpacePressed() {
+        public synchronized boolean isSpacePressed() {
             return spacePressed;
         }
 
-        public boolean isCtrlPressed() {
+        public synchronized boolean isCtrlPressed() {
             return ctrlPressed;
         }
-        
-        
     }
     
 }
