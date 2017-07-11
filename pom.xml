@@ -172,6 +172,7 @@
         <source.java.version>1.8</source.java.version>
         <dependency.jul.version>1.4-SNAPSHOT</dependency.jul.version>
         <dependency.bco.registry.version>1.4-SNAPSHOT</dependency.bco.registry.version>
+        <dependency.bco.dal.version>1.4-SNAPSHOT</dependency.bco.dal.version>
     </properties>
 
     <dependencies>
@@ -211,6 +212,11 @@
             <artifactId>registry.remote</artifactId>
             <version>${dependency.bco.registry.version}</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.openbase.bco</groupId>
+            <artifactId>dal.remote</artifactId>
+            <version>${dependency.bco.dal.version}</version>
         </dependency>
         <dependency>
             <groupId>java3d</groupId>
