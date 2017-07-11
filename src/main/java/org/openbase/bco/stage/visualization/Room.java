@@ -35,7 +35,7 @@ import javafx.scene.paint.PhongMaterial;
 
 /**
  *
- * @author thoren
+ * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class Room extends Group {
     private static final double ROOM_HEIGHT = 2.80;

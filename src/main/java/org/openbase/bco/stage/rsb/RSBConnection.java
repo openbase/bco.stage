@@ -44,7 +44,7 @@ import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
 
 /**
  *
- * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de>Thoren Huppke</a>
+ * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class RSBConnection {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(RSBConnection.class);
@@ -53,22 +53,22 @@ public class RSBConnection {
     private Scope postureScope;
     private Scope rayScope;
     
-    public RSBConnection(AbstractEventHandler handler) throws CouldNotPerformException {
+    public RSBConnection(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException {
         LOGGER.info("Initializing RSB connection.");
         initializeListeners(handler);
     }
     
-    public void deactivate() throws CouldNotPerformException{
+    public void deactivate() throws CouldNotPerformException, InterruptedException{
         LOGGER.info("Deactivating RSB connection.");
         try{
             skeletonListener.deactivate();
             rayListener.deactivate();
-        } catch (RSBException | InterruptedException ex) {
+        } catch (RSBException ex) {
             throw new CouldNotPerformException("Could not deactivate informer and listener.", ex);
         } 
     }
     
-    private void initializeListeners(AbstractEventHandler handler) throws CouldNotPerformException{
+    private void initializeListeners(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException{
         LOGGER.debug("Registering converters.");
         final ProtocolBufferConverter<TrackedPostures3DFloat> postureConverter = new ProtocolBufferConverter<>(
                     TrackedPostures3DFloat.getDefaultInstance());
@@ -101,7 +101,7 @@ public class RSBConnection {
             skeletonListener.addHandler(handler, true);
             rayListener.addHandler(handler, true);
             
-        } catch (JPNotAvailableException | RSBException | InterruptedException ex) {
+        } catch (JPNotAvailableException | RSBException ex) {
             throw new CouldNotPerformException("RSB listener could not be initialized.", ex);
         }
     }

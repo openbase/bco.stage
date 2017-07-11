@@ -24,7 +24,7 @@ package org.openbase.bco.stage.pointing;
 
 /**
  *
- * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de>Thoren Huppke</a>
+ * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public enum Joints {
     SpineBase(0),

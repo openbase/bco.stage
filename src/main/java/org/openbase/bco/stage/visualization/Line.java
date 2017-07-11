@@ -35,7 +35,7 @@ import javafx.scene.shape.Cylinder;
 
 /**
  *
- * @author thoren
+ * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class Line extends Group {
     private final static Point3D UP = new Point3D(0, 1, 0);

@@ -39,7 +39,7 @@ import javafx.scene.transform.Translate;
 
 /**
  *
- * @author thoren
+ * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class MoveableCamera extends PerspectiveCamera implements EventHandler{
     //TODO initial position and rotation via JPService.

@@ -29,7 +29,7 @@ package org.openbase.bco.stage.pointing;
 
 /**
  *
- * @author thoren
+ * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class JointPair {
     private final Joints joint1;

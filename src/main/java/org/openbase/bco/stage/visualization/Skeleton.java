@@ -39,7 +39,7 @@ import rst.tracking.TrackedPosture3DFloatType;
 
 /**
  *
- * @author thoren
+ * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class Skeleton extends Group{
     private final static MaterialManager MATERIAL_MANAGER = new MaterialManager();

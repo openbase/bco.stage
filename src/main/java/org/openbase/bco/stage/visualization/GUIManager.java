@@ -28,7 +28,9 @@ package org.openbase.bco.stage.visualization;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
@@ -38,31 +40,43 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.openbase.bco.stage.registry.RegistryObjectInterface;
 import org.openbase.jps.core.JPService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rct.Transform;
+import rst.domotic.unit.UnitConfigType;
 import rst.tracking.PointingRay3DFloatCollectionType.PointingRay3DFloatCollection;
 import rst.tracking.TrackedPosture3DFloatType.TrackedPosture3DFloat;
 import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
 
 /**
  *
- * @author thoren
+ * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class GUIManager {
+public class GUIManager implements RegistryObjectInterface {
     private static final Logger LOGGER = LoggerFactory.getLogger(GUIManager.class);
     // TODO 
     // -Visualize objects
     // -Visualize selected objects
+    // -InterruptedException niemals fangen!!!
+    // -GetPosition und GetGlobalPosition für UnitRemotes implementieren und PullRequest stellen. In AbstractUnitRemote
+    // -RegistryManager ersetzen durch EnableableEntryRegistrySynchronizer wie in AppManagerController von bco.manager
+    //    -Ähnlich wie AbstractUnitPane, UnitPaneFactory etc. in bco.bcozy
+    // -JavaFx stuff wie Line oder Ray in jul.visual.javafx einpflegen
     private static final double AXIS_LENGTH = 250.0;
     private static final double AXIS_WIDTH = 0.03;
     private final Skeleton[] skeletons = new Skeleton[6];
     private final List<Ray> rays = new ArrayList<>();
 
     private final Group root = new Group();
-    private final Group axisGroup = new Group();
     private final Group world = new Group();
+    private final Group axisGroup = new Group();
+    private final Group skeletonGroup = new Group();
+    private final Group rayGroup = new Group();
+    private final ObjectGroup objectGroup;
     private final MoveableCamera camera;
+    private final Room room;
     
     private final MaterialManager mm = new MaterialManager();
     private final AnimationTimer mainLoop;
@@ -70,7 +84,7 @@ public class GUIManager {
     private TrackedPostures3DFloat skeletonData;
     private boolean skeletonDataUpdated = false;
     private PointingRay3DFloatCollection rayData;
-    private boolean rayDataUpdated = false;
+    private boolean rayDataUpdated = false; 
     
     public GUIManager(Stage primaryStage){
         LOGGER.info("Setting up the 3D - scene.");
@@ -80,7 +94,11 @@ public class GUIManager {
         root.setDepthTest(DepthTest.ENABLE);
 
         buildAxes();
-        world.getChildren().add(new Room());
+        room = new Room();
+        world.getChildren().add(room);
+        objectGroup = new ObjectGroup();
+        world.getChildren().add(objectGroup);
+        world.getChildren().add(rayGroup);
         buildSkeletons();
 
         Scene scene = new Scene(root, 1024, 768, true);
@@ -124,6 +142,21 @@ public class GUIManager {
                     case X:
                         axisGroup.setVisible(!axisGroup.isVisible());
                         break;
+                    case R:
+                        rayGroup.setVisible(!rayGroup.isVisible());
+                        break;
+                    case P:
+                        skeletonGroup.setVisible(!skeletonGroup.isVisible());
+                        break;
+                    case M:
+                        room.setVisible(!room.isVisible());
+                        break;
+                    case O:
+                        objectGroup.setVisible(!objectGroup.isVisible());
+                        break;
+                    case H:
+                        //TODO: show help here.
+                        break;
                     default:
                         camera.handle(event);
                         break;
@@ -150,9 +183,10 @@ public class GUIManager {
         
         for (int i = 0; i < skeletons.length; i++){
             skeletons[i] = new Skeleton();
-            world.getChildren().add(skeletons[i]);
+            skeletonGroup.getChildren().add(skeletons[i]);
             skeletons[i].setVisible(false);
         }
+        world.getChildren().add(skeletonGroup);
     }
     
     private synchronized void updateOrCreateSkeletons(){
@@ -178,13 +212,13 @@ public class GUIManager {
             for(int i = 0; i < difference; i++){
                 Ray r = new Ray();
                 rays.add(r);
-                world.getChildren().add(r);
+                rayGroup.getChildren().add(r);
             }
         } else {
             LOGGER.trace("Removing rays.");
             for(int i = 0; i < -difference; i++){
                 Ray r = rays.get(rayData.getElementCount());
-                world.getChildren().remove(r);
+                rayGroup.getChildren().remove(r);
                 rays.remove(rayData.getElementCount());
             }
         }
@@ -193,5 +227,24 @@ public class GUIManager {
             rays.get(i).update(rayData.getElement(i));
         }
         rayDataUpdated = false;
+    }
+
+    @Override
+    public void add(UnitConfigType.UnitConfig config, Transform toRootCoordinateTransform) {
+        objectGroup.add(config, toRootCoordinateTransform);
+    }
+
+    @Override
+    public void update(String id, UnitConfigType.UnitConfig config, Transform toRootCoordinateTransform) {
+    }
+
+    @Override
+    public void removeById(String id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void shutdownRemotes() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

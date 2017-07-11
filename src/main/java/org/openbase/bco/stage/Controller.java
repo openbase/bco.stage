@@ -29,6 +29,7 @@ package org.openbase.bco.stage;
 
 import org.openbase.bco.stage.visualization.GUIManager;
 import javafx.stage.Stage;
+import org.openbase.bco.stage.registry.RegistryManager;
 import org.openbase.bco.stage.rsb.RSBConnection;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
@@ -41,16 +42,18 @@ import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
 
 /**
  *
- * @author thoren
+ * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class Controller extends AbstractEventHandler{
     private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
     private final GUIManager guiManager;
     private RSBConnection rsbConnection;
+    private RegistryManager registryManager;
     
     public Controller(Stage primaryStage){
         guiManager = new GUIManager(primaryStage);
         try {
+            registryManager = new RegistryManager(guiManager);
             rsbConnection = new RSBConnection(this);
         } catch (Exception ex) {
             ExceptionPrinter.printHistory(new CouldNotPerformException("App failed", ex), LOGGER);

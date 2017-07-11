@@ -33,7 +33,7 @@ import javafx.scene.paint.PhongMaterial;
 
 /**
  *
- * @author thoren
+ * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class MaterialManager {
     private ArrayList<PhongMaterial> skeletonMaterials = new ArrayList<>();
