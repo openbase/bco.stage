@@ -58,7 +58,7 @@ public class Skeleton extends Group{
     
 
     public Skeleton() {
-        Material material = MaterialManager.getInstance().nextSkeletonMaterial();
+        Material material = PhongMaterialManager.getInstance().nextSkeletonMaterial();
         spheres = new Sphere[25];
         lines = new Line[JOINT_PAIRS.length];
         for(Joints j : Joints.values()){

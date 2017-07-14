@@ -30,8 +30,8 @@ import javafx.scene.paint.PhongMaterial;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class MaterialManager {
-    private ArrayList<PhongMaterial> skeletonMaterials = new ArrayList<>();
+public class PhongMaterialManager {
+    private final ArrayList<PhongMaterial> skeletonMaterials = new ArrayList<>();
     private int index = 0;
     public PhongMaterial red;
     public PhongMaterial blue;
@@ -42,9 +42,9 @@ public class MaterialManager {
     public PhongMaterial grey;
     public PhongMaterial white;
     
-    public static MaterialManager instance;
+    public static PhongMaterialManager instance;
 
-    private MaterialManager() {
+    private PhongMaterialManager() {
         red = new PhongMaterial(Color.DARKRED);
         red.setSpecularColor(Color.RED);
         skeletonMaterials.add(red);
@@ -81,9 +81,9 @@ public class MaterialManager {
      *
      * @return
      */
-    public synchronized static MaterialManager getInstance() {
+    public synchronized static PhongMaterialManager getInstance() {
         if (instance == null) {
-            instance = new MaterialManager();
+            instance = new PhongMaterialManager();
         }
         return instance;
     }

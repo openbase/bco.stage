@@ -23,13 +23,10 @@ package org.openbase.bco.stage;
  */
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import javafx.application.Platform;
 import org.openbase.bco.stage.visualization.GUIManager;
 import javafx.stage.Stage;
-import javax.vecmath.AxisAngle4d;
 import org.openbase.bco.dal.remote.unit.AbstractUnitRemote;
 import org.openbase.bco.dal.remote.unit.Units;
 import org.openbase.bco.registry.remote.Registries;
@@ -59,6 +56,7 @@ import rst.configuration.MetaConfigType;
 import rst.domotic.service.ServiceConfigType;
 import rst.domotic.service.ServiceTemplateType;
 import rst.domotic.unit.UnitConfigType.UnitConfig;
+import rst.domotic.unit.UnitProbabilityCollectionType.UnitProbabilityCollection;
 /**
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
@@ -114,6 +112,11 @@ public final class Controller extends AbstractEventHandler{
             LOGGER.trace("New PointingRay3DFloatCollection event received.");
             PointingRay3DFloatCollection pointingRays = (PointingRay3DFloatCollection) event.getData();
             guiManager.updateRayData(pointingRays);
+        } else if(event.getData() instanceof UnitProbabilityCollection) {
+            LOGGER.trace("New UnitProbabilityCollection event received.");
+            UnitProbabilityCollection selectedUnits = (UnitProbabilityCollection) event.getData();
+            //TODO process unit/units correctly
+            guiManager.highlightObject(selectedUnits.getElement(0).getId());
         }
     }
     

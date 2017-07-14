@@ -25,6 +25,7 @@ package org.openbase.bco.stage.rsb;
 import org.openbase.bco.stage.jp.JPPostureScope;
 import org.openbase.bco.stage.jp.JPLocalInput;
 import org.openbase.bco.stage.jp.JPRayScope;
+import org.openbase.bco.stage.jp.JPSelectedUnitScope;
 import org.openbase.jps.core.JPService;
 import org.openbase.jps.exception.JPNotAvailableException;
 import org.openbase.jul.exception.CouldNotPerformException;
@@ -39,7 +40,8 @@ import rsb.config.TransportConfig;
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
 import rsb.util.Properties;
-import rst.tracking.PointingRay3DFloatCollectionType;
+import rst.domotic.unit.UnitProbabilityCollectionType.UnitProbabilityCollection;
+import rst.tracking.PointingRay3DFloatCollectionType.PointingRay3DFloatCollection;
 import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
 
 /**
@@ -50,8 +52,10 @@ public class RSBConnection {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(RSBConnection.class);
     private Listener skeletonListener;
     private Listener rayListener;
+    private Listener selectedUnitListener;
     private Scope postureScope;
     private Scope rayScope;
+    private Scope selectedUnitScope;
     
     public RSBConnection(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException {
         LOGGER.info("Initializing RSB connection.");
@@ -75,31 +79,42 @@ public class RSBConnection {
         DefaultConverterRepository.getDefaultConverterRepository()
             .addConverter(postureConverter);
         
-        final ProtocolBufferConverter<PointingRay3DFloatCollectionType.PointingRay3DFloatCollection> rayConverter = new ProtocolBufferConverter<>(
-                    PointingRay3DFloatCollectionType.PointingRay3DFloatCollection.getDefaultInstance());
+        final ProtocolBufferConverter<PointingRay3DFloatCollection> rayConverter = new ProtocolBufferConverter<>(
+                    PointingRay3DFloatCollection.getDefaultInstance());
         DefaultConverterRepository.getDefaultConverterRepository()
             .addConverter(rayConverter);
+        
+        final ProtocolBufferConverter<UnitProbabilityCollection> selectedUnitConverter = new ProtocolBufferConverter<>(
+                    UnitProbabilityCollection.getDefaultInstance());
+        DefaultConverterRepository.getDefaultConverterRepository()
+            .addConverter(selectedUnitConverter);
         
         
         try {
             postureScope = JPService.getProperty(JPPostureScope.class).getValue();
             rayScope = JPService.getProperty(JPRayScope.class).getValue();
+            selectedUnitScope = JPService.getProperty(JPSelectedUnitScope.class).getValue();
             LOGGER.info("Initializing RSB Posture Listener on scope: " + postureScope);
             LOGGER.info("Initializing RSB Ray Listener on scope: " + rayScope);
+            LOGGER.info("Initializing RSB Selected Unit Listener on scope: " + selectedUnitScope);
             if(JPService.getProperty(JPLocalInput.class).getValue()){
                 LOGGER.warn("RSB input set to socket and localhost.");
                 skeletonListener = Factory.getInstance().createListener(postureScope, getLocalConfig());
                 rayListener = Factory.getInstance().createListener(rayScope, getLocalConfig());
+                selectedUnitListener = Factory.getInstance().createListener(selectedUnitScope, getLocalConfig());
             } else {
                 skeletonListener = Factory.getInstance().createListener(postureScope);
                 rayListener = Factory.getInstance().createListener(rayScope);
+                selectedUnitListener = Factory.getInstance().createListener(selectedUnitScope);
             }
             skeletonListener.activate();
             rayListener.activate();
+            selectedUnitListener.activate();
             
             // Add an EventHandler.
             skeletonListener.addHandler(handler, true);
             rayListener.addHandler(handler, true);
+            selectedUnitListener.addHandler(handler, true);
             
         } catch (JPNotAvailableException | RSBException ex) {
             throw new CouldNotPerformException("RSB listener could not be initialized.", ex);

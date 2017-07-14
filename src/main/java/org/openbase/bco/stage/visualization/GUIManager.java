@@ -24,6 +24,7 @@ package org.openbase.bco.stage.visualization;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -39,6 +40,8 @@ import org.openbase.bco.stage.registry.SynchronizableRegistryImpl;
 import org.openbase.jps.core.JPService;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.InstantiationException;
+import org.openbase.jul.exception.printer.ExceptionPrinter;
+import org.openbase.jul.exception.printer.LogLevel;
 import org.openbase.jul.storage.registry.SynchronizableRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +67,7 @@ public final class GUIManager {
     private static final double AXIS_LENGTH = 250.0;
     private static final double AXIS_WIDTH = 0.03;
     private final Skeleton[] skeletons = new Skeleton[6];
-    private final List<Ray> rays = new ArrayList<>();
+    private final List<PointingRay> rays = new ArrayList<>();
     private final SynchronizableRegistryImpl<String, ObjectBox> objectBoxRegistry;
 
     private final Stage primaryStage;
@@ -199,7 +202,7 @@ public final class GUIManager {
     private void buildAxes() {
         LOGGER.debug("Creating axes visualization.");
         
-        MaterialManager mm = MaterialManager.getInstance();
+        PhongMaterialManager mm = PhongMaterialManager.getInstance();
         final Line xLine = new Line(Line.LineType.BOX, AXIS_WIDTH, mm.red, new Point3D(-AXIS_LENGTH,0,0), new Point3D(AXIS_LENGTH,0,0));
         final Line yLine = new Line(Line.LineType.BOX, AXIS_WIDTH, mm.green, new Point3D(0,-AXIS_LENGTH,0), new Point3D(0,AXIS_LENGTH,0));
         final Line zLine = new Line(Line.LineType.BOX, AXIS_WIDTH, mm.blue, new Point3D(0,0,-AXIS_LENGTH), new Point3D(0,0,AXIS_LENGTH));
@@ -241,14 +244,14 @@ public final class GUIManager {
         if(difference > 0){
             LOGGER.trace("Adding new rays.");
             for(int i = 0; i < difference; i++){
-                Ray r = new Ray();
+                PointingRay r = new PointingRay();
                 rays.add(r);
                 rayGroup.getChildren().add(r);
             }
         } else {
             LOGGER.trace("Removing rays.");
             for(int i = 0; i < -difference; i++){
-                Ray r = rays.get(rayData.getElementCount());
+                PointingRay r = rays.get(rayData.getElementCount());
                 rayGroup.getChildren().remove(r);
                 rays.remove(rayData.getElementCount());
             }
@@ -266,5 +269,17 @@ public final class GUIManager {
 
     public SynchronizableRegistry<String, ObjectBox> getObjectBoxRegistry() {
         return objectBoxRegistry;
+    }
+
+    public void highlightObject(String id) {
+        try {
+            if(objectBoxRegistry.contains(id)){
+                objectBoxRegistry.get(id).highlight();
+            } else {
+                LOGGER.trace("ObjectBox with id " + id + " not found in local registry.");
+            }
+        } catch (CouldNotPerformException ex) {
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Could not check objectBoxRegistry for id: " + id, ex), LOGGER, LogLevel.WARN);
+        }
     }
 }

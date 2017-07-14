@@ -22,16 +22,22 @@ package org.openbase.bco.stage.visualization;
  * #L%
  */
 
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.geometry.Point3D;
+import javafx.scene.paint.Material;
 import javafx.scene.shape.Box;
 import javax.vecmath.AxisAngle4d;
 import javax.vecmath.Point3d;
 import org.openbase.bco.dal.remote.unit.AbstractUnitRemote;
 import org.openbase.bco.dal.remote.unit.Units;
+import org.openbase.bco.stage.Controller;
 import org.openbase.bco.stage.registry.JavaFX3dObjectRegistryEntry;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.NotAvailableException;
+import org.slf4j.LoggerFactory;
 import rst.domotic.unit.UnitConfigType.UnitConfig;
 import rst.geometry.AxisAlignedBoundingBox3DFloatType.AxisAlignedBoundingBox3DFloat;
 
@@ -40,13 +46,22 @@ import rst.geometry.AxisAlignedBoundingBox3DFloatType.AxisAlignedBoundingBox3DFl
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig>{
-    private UnitConfig config;
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ObjectBox.class);
+    
+    private static final Material DEFAULT_MATERIAL = PhongMaterialManager.getInstance().white;
+    private static final Material HIGHTLIGHT_MATERIAL = PhongMaterialManager.getInstance().green;
+    private static final int COOLDOWN_TIME = 3000;
+    
     private final Box box;
+    
+    private UnitConfig config;
+    private Thread cooldownThread;
+    private long highlightEndTime;
 
     public ObjectBox() {
         box = new Box();
         box.setVisible(false);
-        box.setMaterial(MaterialManager.getInstance().white);
+        box.setMaterial(DEFAULT_MATERIAL);
     }
 
     @Override
@@ -96,5 +111,39 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
     @Override
     public Box getNode(){
         return box;
+    }
+    
+    public synchronized void highlight(){
+        setMaterial(HIGHTLIGHT_MATERIAL);
+        highlightEndTime = System.currentTimeMillis()+COOLDOWN_TIME;
+        LOGGER.trace("highlighting ObjectBox of " + config.getLabel() + " with id: " + config.getId());
+        if(cooldownThread == null || !cooldownThread.isAlive()){
+            cooldownThread = new Thread(() -> {
+                long time_diff = getHighlightEndTime() - System.currentTimeMillis();
+                while(time_diff > 0){
+                    try {
+                        Thread.sleep(time_diff);
+                    } catch (InterruptedException ex) {
+                        Controller.criticalError(ex);
+                    }
+                    time_diff = getHighlightEndTime() - System.currentTimeMillis();
+                }
+                setMaterial(DEFAULT_MATERIAL);
+            });
+        }
+        cooldownThread.start();
+    }
+    
+    private synchronized long getHighlightEndTime(){
+        return highlightEndTime;
+    }
+    
+    private void setMaterial(Material material){
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                box.setMaterial(material);
+            }
+        });
     }
 }

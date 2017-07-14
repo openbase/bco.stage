@@ -52,7 +52,7 @@ public class Room extends Group {
     }
     
     public Room(double width){
-        PhongMaterial material = MaterialManager.getInstance().grey;
+        PhongMaterial material = PhongMaterialManager.getInstance().grey;
         Line.LineType lineType = Line.LineType.BOX;
         fillGroundPoints();
         for(int i = 0; i < groundPoints.size() -1; i++){
