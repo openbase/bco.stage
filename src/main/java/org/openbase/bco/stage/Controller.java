@@ -70,6 +70,13 @@ public final class Controller extends AbstractEventHandler{
     private List<String> registryFlags;
     private boolean connectedRegistry = false;
     
+    // TODO list:
+    // -InterruptedException niemals fangen!!!
+    // -GetPosition und GetGlobalPosition für UnitRemotes implementieren und PullRequest stellen. In AbstractUnitRemote -- PullRequest muss durchgehen.
+    // -Auf Bearbeitung von Ticket #52 warten, bzw code entsprechend anpasssen.
+    // -JavaFx stuff wie Line oder Ray in jul.visual.javafx einpflegen
+    // - Remove mainLoop and replace by runLater stuff in the components.
+    
     public Controller(Stage primaryStage){
         try{
             try{

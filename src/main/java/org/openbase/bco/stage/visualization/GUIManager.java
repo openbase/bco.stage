@@ -55,15 +55,7 @@ import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
  */
 public final class GUIManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(GUIManager.class);
-    // TODO list:
-    // -Visualize objects
-    // -Visualize selected objects
-    // -InterruptedException niemals fangen!!!
-    // -GetPosition und GetGlobalPosition für UnitRemotes implementieren und PullRequest stellen. In AbstractUnitRemote
-    // -RegistryManager ersetzen durch EnableableEntryRegistrySynchronizer wie in AppManagerController von bco.manager
-    //    -Ähnlich wie AbstractUnitPane, UnitPaneFactory etc. in bco.bcozy
-    // -JavaFx stuff wie Line oder Ray in jul.visual.javafx einpflegen
-    // - Remove mainLoop and replace by runLater stuff in the components.
+    
     private static final double AXIS_LENGTH = 250.0;
     private static final double AXIS_WIDTH = 0.03;
     private final Skeleton[] skeletons = new Skeleton[6];
@@ -80,12 +72,6 @@ public final class GUIManager {
     private final MoveableCamera camera;
     private final Room room;
     
-    private final AnimationTimer mainLoop;
-    
-    private TrackedPostures3DFloat skeletonData;
-    private boolean skeletonDataUpdated = false;
-    private PointingRay3DFloatCollection rayData;
-    private boolean rayDataUpdated = false; 
     private final Controller controller;
     
     public GUIManager(Stage primaryStage, Controller ctrl) throws InstantiationException{
@@ -122,15 +108,6 @@ public final class GUIManager {
             });
             
             scene.setCamera(camera);
-            
-            mainLoop = new AnimationTimer() {
-                @Override
-                public void handle(long now) {
-                    updateOrCreateSkeletons();
-                    updateOrCreateRays();
-                }
-            };
-            mainLoop.start();
         } catch (InstantiationException ex) {
             throw new InstantiationException(this, ex);
         }
@@ -148,13 +125,11 @@ public final class GUIManager {
     }
     
     public synchronized void updateSkeletonData(TrackedPostures3DFloat postures){
-        skeletonData = postures;
-        skeletonDataUpdated = true;
+        updateOrCreateSkeletons(postures);
     }
     
     public synchronized void updateRayData(PointingRay3DFloatCollection pointingRays){
-        rayData = pointingRays;
-        rayDataUpdated = true;
+        updateOrCreateRays(pointingRays);
     }
     
     private void connectCamera(Scene scene){
@@ -223,44 +198,50 @@ public final class GUIManager {
         world.getChildren().add(skeletonGroup);
     }
     
-    private synchronized void updateOrCreateSkeletons(){
-        if(!skeletonDataUpdated) return;
-        for(int i = 0; i < skeletonData.getPostureCount(); i++){
-            TrackedPosture3DFloat posture = skeletonData.getPosture(i);
-            if(posture.getConfidenceCount() > 0){
-                skeletons[i].updatePositions(posture);
-                skeletons[i].setVisible(true);
-            } else {
-                skeletons[i].setVisible(false);
+    private synchronized void updateOrCreateSkeletons(TrackedPostures3DFloat postures){
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i < postures.getPostureCount(); i++){
+                    TrackedPosture3DFloat posture = postures.getPosture(i);
+                    if(posture.getConfidenceCount() > 0){
+                        skeletons[i].updatePositions(posture);
+                        skeletons[i].setVisible(true);
+                    } else {
+                        skeletons[i].setVisible(false);
+                    }
+                }
             }
-        }
-        skeletonDataUpdated = false;
+        });
     }
     
-    private synchronized void updateOrCreateRays(){
-        if(!rayDataUpdated) return;
-        LOGGER.trace("Updating or creating rays.");
-        int difference = rayData.getElementCount() - rays.size();
-        if(difference > 0){
-            LOGGER.trace("Adding new rays.");
-            for(int i = 0; i < difference; i++){
-                PointingRay r = new PointingRay();
-                rays.add(r);
-                rayGroup.getChildren().add(r);
+    private synchronized void updateOrCreateRays(PointingRay3DFloatCollection pointingRays){
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                LOGGER.trace("Updating or creating rays.");
+                int difference = pointingRays.getElementCount() - rays.size();
+                if(difference > 0){
+                    LOGGER.trace("Adding new rays.");
+                    for(int i = 0; i < difference; i++){
+                        PointingRay r = new PointingRay();
+                        rays.add(r);
+                        rayGroup.getChildren().add(r);
+                    }
+                } else {
+                    LOGGER.trace("Removing rays.");
+                    for(int i = 0; i < -difference; i++){
+                        PointingRay r = rays.get(pointingRays.getElementCount());
+                        rayGroup.getChildren().remove(r);
+                        rays.remove(pointingRays.getElementCount());
+                    }
+                }
+                LOGGER.trace("Updating existing rays.");
+                for(int i = 0; i < pointingRays.getElementCount(); i++){
+                    rays.get(i).update(pointingRays.getElement(i));
+                }
             }
-        } else {
-            LOGGER.trace("Removing rays.");
-            for(int i = 0; i < -difference; i++){
-                PointingRay r = rays.get(rayData.getElementCount());
-                rayGroup.getChildren().remove(r);
-                rays.remove(rayData.getElementCount());
-            }
-        }
-        LOGGER.trace("Updating existing rays.");
-        for(int i = 0; i < rayData.getElementCount(); i++){
-            rays.get(i).update(rayData.getElement(i));
-        }
-        rayDataUpdated = false;
+        });
     }
     
     public Group getObjectGroup(){
