@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.openbase.bco.stage.visualization;
 
 /*-
@@ -57,7 +52,7 @@ public class Room extends Group {
     }
     
     public Room(double width){
-        PhongMaterial material = new MaterialManager().white;
+        PhongMaterial material = MaterialManager.getInstance().white;
         Line.LineType lineType = Line.LineType.BOX;
         fillGroundPoints();
         for(int i = 0; i < groundPoints.size() -1; i++){

@@ -25,12 +25,9 @@ package org.openbase.bco.stage;
 import org.openbase.bco.stage.jp.JPPostureScope;
 import org.openbase.bco.stage.jp.JPLocalInput;
 import org.openbase.bco.stage.jp.JPRayScope;
-import org.openbase.bco.stage.rsb.RSBConnection;
 import java.util.List;
 import javafx.application.Application;
 import org.openbase.jps.core.JPService;
-import org.openbase.jul.exception.CouldNotPerformException;
-import org.openbase.jul.exception.printer.ExceptionPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

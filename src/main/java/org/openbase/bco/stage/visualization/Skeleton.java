@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.openbase.bco.stage.visualization;
 
 /*-
@@ -42,7 +37,6 @@ import rst.tracking.TrackedPosture3DFloatType;
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class Skeleton extends Group{
-    private final static MaterialManager MATERIAL_MANAGER = new MaterialManager();
     private final static double JOINT_SIZE = 0.04;
     private final static double HEAD_SIZE = 0.10;
     private final static double CONNECTION_DIAMETER = 0.03;
@@ -64,7 +58,7 @@ public class Skeleton extends Group{
     
 
     public Skeleton() {
-        Material material = MATERIAL_MANAGER.nextSkeletonMaterial();
+        Material material = MaterialManager.getInstance().nextSkeletonMaterial();
         spheres = new Sphere[25];
         lines = new Line[JOINT_PAIRS.length];
         for(Joints j : Joints.values()){

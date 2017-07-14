@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.openbase.bco.stage.visualization;
 
 /*-
@@ -47,8 +42,10 @@ public class MaterialManager {
     public PhongMaterial grey;
     public PhongMaterial gray;
     public PhongMaterial white;
+    
+    public static MaterialManager instance;
 
-    public MaterialManager() {
+    private MaterialManager() {
         red = new PhongMaterial(Color.DARKRED);
         red.setSpecularColor(Color.RED);
         skeletonMaterials.add(red);
@@ -78,6 +75,18 @@ public class MaterialManager {
         
         white = new PhongMaterial(Color.WHITESMOKE);
         white.setSpecularColor(Color.WHITE);
+    }
+
+    /**
+     * Method returns a new singelton instance of the unit factory.
+     *
+     * @return
+     */
+    public synchronized static MaterialManager getInstance() {
+        if (instance == null) {
+            instance = new MaterialManager();
+        }
+        return instance;
     }
     
     public PhongMaterial nextSkeletonMaterial(){

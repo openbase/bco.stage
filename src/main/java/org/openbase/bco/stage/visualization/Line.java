@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.openbase.bco.stage.visualization;
 
 /*-
@@ -72,14 +67,14 @@ public class Line extends Group {
     }
     
     public final void setStartEndPoints(Point3D point1, Point3D point2){
-        super.setVisible(true);
         Point3D direction = point1.subtract(point2);
         Point3D position = point1.midpoint(point2);
         setLength(direction.magnitude());
+        Point3D axis = UP.crossProduct(direction.normalize());
+        super.setVisible(true);
         super.setTranslateX(position.getX());
         super.setTranslateY(position.getY());
         super.setTranslateZ(position.getZ());
-        Point3D axis = UP.crossProduct(direction.normalize());
         super.setRotationAxis(axis);
         super.setRotate(UP.angle(direction.normalize()));
     }

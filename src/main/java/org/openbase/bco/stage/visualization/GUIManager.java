@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.openbase.bco.stage.visualization;
 
 /*-
@@ -28,10 +23,9 @@ package org.openbase.bco.stage.visualization;
  */
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.DepthTest;
@@ -40,12 +34,9 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.openbase.bco.stage.registry.RegistryObjectInterface;
 import org.openbase.jps.core.JPService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rct.Transform;
-import rst.domotic.unit.UnitConfigType;
 import rst.tracking.PointingRay3DFloatCollectionType.PointingRay3DFloatCollection;
 import rst.tracking.TrackedPosture3DFloatType.TrackedPosture3DFloat;
 import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
@@ -54,9 +45,9 @@ import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class GUIManager implements RegistryObjectInterface {
+public class GUIManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(GUIManager.class);
-    // TODO 
+    // TODO list:
     // -Visualize objects
     // -Visualize selected objects
     // -InterruptedException niemals fangen!!!
@@ -64,21 +55,22 @@ public class GUIManager implements RegistryObjectInterface {
     // -RegistryManager ersetzen durch EnableableEntryRegistrySynchronizer wie in AppManagerController von bco.manager
     //    -Ähnlich wie AbstractUnitPane, UnitPaneFactory etc. in bco.bcozy
     // -JavaFx stuff wie Line oder Ray in jul.visual.javafx einpflegen
+    // - Remove mainLoop and replace by runLater stuff in the components.
     private static final double AXIS_LENGTH = 250.0;
     private static final double AXIS_WIDTH = 0.03;
     private final Skeleton[] skeletons = new Skeleton[6];
     private final List<Ray> rays = new ArrayList<>();
 
+    private final Stage primaryStage;
     private final Group root = new Group();
     private final Group world = new Group();
     private final Group axisGroup = new Group();
     private final Group skeletonGroup = new Group();
     private final Group rayGroup = new Group();
-    private final ObjectGroup objectGroup;
+    private final Group objectGroup = new Group();
     private final MoveableCamera camera;
     private final Room room;
     
-    private final MaterialManager mm = new MaterialManager();
     private final AnimationTimer mainLoop;
     
     private TrackedPostures3DFloat skeletonData;
@@ -88,6 +80,8 @@ public class GUIManager implements RegistryObjectInterface {
     
     public GUIManager(Stage primaryStage){
         LOGGER.info("Setting up the 3D - scene.");
+        this.primaryStage = primaryStage;
+        
         camera = new MoveableCamera();
 
         root.getChildren().add(world);
@@ -96,7 +90,6 @@ public class GUIManager implements RegistryObjectInterface {
         buildAxes();
         room = new Room();
         world.getChildren().add(room);
-        objectGroup = new ObjectGroup();
         world.getChildren().add(objectGroup);
         world.getChildren().add(rayGroup);
         buildSkeletons();
@@ -108,6 +101,12 @@ public class GUIManager implements RegistryObjectInterface {
         primaryStage.setTitle(JPService.getApplicationName());
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        primaryStage.setOnCloseRequest(e->{
+            LOGGER.info("Close called on primary stage.");
+            Platform.exit();
+            System.exit(0);
+        });
 
         scene.setCamera(camera);
         
@@ -119,6 +118,17 @@ public class GUIManager implements RegistryObjectInterface {
             }
         };
         mainLoop.start();
+    }
+    
+    public void close(){
+        LOGGER.info("close called on GUIManager");
+//        primaryStage.fireEvent(
+//            new WindowEvent(
+//                primaryStage,
+//                WindowEvent.WINDOW_CLOSE_REQUEST
+//            )
+//        );
+        primaryStage.close();
     }
     
     public synchronized void updateSkeletonData(TrackedPostures3DFloat postures){
@@ -169,6 +179,7 @@ public class GUIManager implements RegistryObjectInterface {
     private void buildAxes() {
         LOGGER.debug("Creating axes visualization.");
         
+        MaterialManager mm = MaterialManager.getInstance();
         final Line xLine = new Line(Line.LineType.BOX, AXIS_WIDTH, mm.red, new Point3D(-AXIS_LENGTH,0,0), new Point3D(AXIS_LENGTH,0,0));
         final Line yLine = new Line(Line.LineType.BOX, AXIS_WIDTH, mm.green, new Point3D(0,-AXIS_LENGTH,0), new Point3D(0,AXIS_LENGTH,0));
         final Line zLine = new Line(Line.LineType.BOX, AXIS_WIDTH, mm.blue, new Point3D(0,0,-AXIS_LENGTH), new Point3D(0,0,AXIS_LENGTH));
@@ -228,23 +239,8 @@ public class GUIManager implements RegistryObjectInterface {
         }
         rayDataUpdated = false;
     }
-
-    @Override
-    public void add(UnitConfigType.UnitConfig config, Transform toRootCoordinateTransform) {
-        objectGroup.add(config, toRootCoordinateTransform);
-    }
-
-    @Override
-    public void update(String id, UnitConfigType.UnitConfig config, Transform toRootCoordinateTransform) {
-    }
-
-    @Override
-    public void removeById(String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void shutdownRemotes() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    public Group getObjectGroup(){
+        return objectGroup;
     }
 }

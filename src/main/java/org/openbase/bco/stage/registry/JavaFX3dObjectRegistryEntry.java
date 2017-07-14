@@ -1,4 +1,4 @@
-package org.openbase.bco.stage.pointing;
+package org.openbase.bco.stage.registry;
 
 /*-
  * #%L
@@ -22,24 +22,16 @@ package org.openbase.bco.stage.pointing;
  * #L%
  */
 
+import javafx.scene.Node;
+import org.openbase.jul.iface.Configurable;
+
 /**
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
+ * @param <KEY>
+ * @param <CONFIG_M>
  */
-public class JointPair {
-    private final Joints joint1;
-    private final Joints joint2;
-
-    public JointPair(Joints joint1, Joints joint2) {
-        this.joint1 = joint1;
-        this.joint2 = joint2;
-    }
-
-    public Joints getJoint1() {
-        return joint1;
-    }
-
-    public Joints getJoint2() {
-        return joint2;
-    }
+public interface JavaFX3dObjectRegistryEntry<KEY, CONFIG_M> extends Configurable<KEY, CONFIG_M> {
+    public Node getNode();
+    
 }
