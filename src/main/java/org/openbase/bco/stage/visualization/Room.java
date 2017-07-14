@@ -33,7 +33,7 @@ import javafx.scene.paint.PhongMaterial;
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class Room extends Group {
-    private static final double ROOM_HEIGHT = 2.80;
+    private static final double ROOM_HEIGHT = 3.20;
     private static final double DEFAULT_WIDTH = 0.05;
     private static final Point3D TO_CEIL = new Point3D(0, 0, ROOM_HEIGHT);
     private final List<Point3D> groundPoints = new ArrayList<>();
@@ -52,7 +52,7 @@ public class Room extends Group {
     }
     
     public Room(double width){
-        PhongMaterial material = MaterialManager.getInstance().white;
+        PhongMaterial material = MaterialManager.getInstance().grey;
         Line.LineType lineType = Line.LineType.BOX;
         fillGroundPoints();
         for(int i = 0; i < groundPoints.size() -1; i++){

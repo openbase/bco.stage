@@ -34,7 +34,12 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.openbase.bco.stage.Controller;
+import org.openbase.bco.stage.registry.SynchronizableRegistryImpl;
 import org.openbase.jps.core.JPService;
+import org.openbase.jul.exception.CouldNotPerformException;
+import org.openbase.jul.exception.InstantiationException;
+import org.openbase.jul.storage.registry.SynchronizableRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rst.tracking.PointingRay3DFloatCollectionType.PointingRay3DFloatCollection;
@@ -45,7 +50,7 @@ import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class GUIManager {
+public final class GUIManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(GUIManager.class);
     // TODO list:
     // -Visualize objects
@@ -60,6 +65,7 @@ public class GUIManager {
     private static final double AXIS_WIDTH = 0.03;
     private final Skeleton[] skeletons = new Skeleton[6];
     private final List<Ray> rays = new ArrayList<>();
+    private final SynchronizableRegistryImpl<String, ObjectBox> objectBoxRegistry;
 
     private final Stage primaryStage;
     private final Group root = new Group();
@@ -77,47 +83,54 @@ public class GUIManager {
     private boolean skeletonDataUpdated = false;
     private PointingRay3DFloatCollection rayData;
     private boolean rayDataUpdated = false; 
+    private final Controller controller;
     
-    public GUIManager(Stage primaryStage){
-        LOGGER.info("Setting up the 3D - scene.");
-        this.primaryStage = primaryStage;
-        
-        camera = new MoveableCamera();
-
-        root.getChildren().add(world);
-        root.setDepthTest(DepthTest.ENABLE);
-
-        buildAxes();
-        room = new Room();
-        world.getChildren().add(room);
-        world.getChildren().add(objectGroup);
-        world.getChildren().add(rayGroup);
-        buildSkeletons();
-
-        Scene scene = new Scene(root, 1024, 768, true);
-        connectCamera(scene);
-        scene.setFill(Color.GREY);
-        
-        primaryStage.setTitle(JPService.getApplicationName());
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        
-        primaryStage.setOnCloseRequest(e->{
-            LOGGER.info("Close called on primary stage.");
-            Platform.exit();
-            System.exit(0);
-        });
-
-        scene.setCamera(camera);
-        
-        mainLoop = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                updateOrCreateSkeletons();
-                updateOrCreateRays();
-            }
-        };
-        mainLoop.start();
+    public GUIManager(Stage primaryStage, Controller ctrl) throws InstantiationException{
+        this.controller = ctrl;
+        try {
+            LOGGER.info("Setting up the 3D - scene.");
+            this.primaryStage = primaryStage;
+            objectBoxRegistry = new SynchronizableRegistryImpl<>();
+            
+            camera = new MoveableCamera();
+            
+            root.getChildren().add(world);
+            root.setDepthTest(DepthTest.ENABLE);
+            
+            buildAxes();
+            room = new Room();
+            world.getChildren().add(room);
+            world.getChildren().add(objectGroup);
+            world.getChildren().add(rayGroup);
+            buildSkeletons();
+            
+            Scene scene = new Scene(root, 1024, 768, true);
+            connectCamera(scene);
+            scene.setFill(Color.GREY);
+            
+            primaryStage.setTitle(JPService.getApplicationName());
+            primaryStage.setScene(scene);
+            primaryStage.show();
+            
+            primaryStage.setOnCloseRequest(e->{
+                LOGGER.info("Close called on primary stage.");
+                Platform.exit();
+                System.exit(0);
+            });
+            
+            scene.setCamera(camera);
+            
+            mainLoop = new AnimationTimer() {
+                @Override
+                public void handle(long now) {
+                    updateOrCreateSkeletons();
+                    updateOrCreateRays();
+                }
+            };
+            mainLoop.start();
+        } catch (InstantiationException ex) {
+            throw new InstantiationException(this, ex);
+        }
     }
     
     public void close(){
@@ -166,6 +179,13 @@ public class GUIManager {
                         break;
                     case H:
                         //TODO: show help here.
+                        break;
+                    case C:
+                        try {
+                            controller.initializeRegistryConnection();
+                        } catch (InterruptedException | CouldNotPerformException ex) {
+                            Controller.criticalError(ex);
+                        }
                         break;
                     default:
                         camera.handle(event);
@@ -242,5 +262,9 @@ public class GUIManager {
     
     public Group getObjectGroup(){
         return objectGroup;
+    }
+
+    public SynchronizableRegistry<String, ObjectBox> getObjectBoxRegistry() {
+        return objectBoxRegistry;
     }
 }

@@ -72,7 +72,7 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
                     box.setHeight(boundingBox.getHeight());
                     
                     box.setRotationAxis(new Point3D(aa.x, aa.y, aa.z));
-                    box.setRotate(aa.angle);
+                    box.setRotate(aa.angle/Math.PI*180);
                 }
             });
             return this.config;

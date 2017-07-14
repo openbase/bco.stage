@@ -23,12 +23,18 @@ package org.openbase.bco.stage;
  */
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import javafx.application.Platform;
 import org.openbase.bco.stage.visualization.GUIManager;
 import javafx.stage.Stage;
+import javax.vecmath.AxisAngle4d;
 import org.openbase.bco.dal.remote.unit.AbstractUnitRemote;
 import org.openbase.bco.dal.remote.unit.Units;
 import org.openbase.bco.registry.remote.Registries;
 import static org.openbase.bco.registry.remote.Registries.getUnitRegistry;
+import org.openbase.bco.stage.jp.JPDisableRegistry;
 import org.openbase.bco.stage.jp.JPRegistryFlags;
 import org.openbase.bco.stage.registry.ObjectBoxFactory;
 import org.openbase.bco.stage.registry.JavaFX3dObjectRegistrySynchronizer;
@@ -41,10 +47,13 @@ import rsb.AbstractEventHandler;
 import rsb.Event;
 import rst.tracking.PointingRay3DFloatCollectionType.PointingRay3DFloatCollection;
 import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
-import org.openbase.bco.stage.registry.SynchronizableRegistryImpl;
 import org.openbase.bco.stage.visualization.ObjectBox;
 import org.openbase.jps.core.JPService;
+import org.openbase.jps.exception.JPNotAvailableException;
+import org.openbase.jul.exception.InstantiationException;
+import org.openbase.jul.exception.NotAvailableException;
 import org.openbase.jul.exception.VerificationFailedException;
+import org.openbase.jul.exception.printer.LogLevel;
 import rst.configuration.EntryType;
 import rst.configuration.MetaConfigType;
 import rst.domotic.service.ServiceConfigType;
@@ -54,44 +63,45 @@ import rst.domotic.unit.UnitConfigType.UnitConfig;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class Controller extends AbstractEventHandler{
+public final class Controller extends AbstractEventHandler{
     private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
-    private final GUIManager guiManager;
+    private GUIManager guiManager;
     private RSBConnection rsbConnection;
-    private ObjectBoxFactory factory;
-    private SynchronizableRegistryImpl<String, ObjectBox> objectBoxRegistry;
     private JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder> appRegistrySynchronizer;
     
-    private List<String> REGISTRY_FLAGS;
+    private List<String> registryFlags;
+    private boolean connectedRegistry = false;
     
     public Controller(Stage primaryStage){
-        guiManager = new GUIManager(primaryStage);
-        this.factory = ObjectBoxFactory.getInstance();
+        try{
+            try{
+                guiManager = new GUIManager(primaryStage, this);
+            } catch (InstantiationException ex) {
+                throw new CouldNotPerformException("Could not initialize GUIManager.", ex);
+            }
 
-        try {
-//            if(Registries.isDataAvailable()){
-            REGISTRY_FLAGS = JPService.getProperty(JPRegistryFlags.class).getValue();
-            this.objectBoxRegistry = new SynchronizableRegistryImpl<>();
-            this.appRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder>(guiManager.getObjectGroup(), objectBoxRegistry, getUnitRegistry().getUnitConfigRemoteRegistry(), factory) {
-                @Override
-                public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
-                    try {
-                        return isApplicableUnit(config);
-                    } catch (InterruptedException ex) {
-                        ExceptionPrinter.printHistory(ex, logger);
-                        return false;
-                    }
+            try {
+                registryFlags = JPService.getProperty(JPRegistryFlags.class).getValue();
+                
+                if(!JPService.getProperty(JPDisableRegistry.class).getValue()){
+                    initializeRegistryConnection();
                 }
-            };
-            Registries.waitForData();
-            appRegistrySynchronizer.activate();
-            
-            rsbConnection = new RSBConnection(this);
-        } catch (Exception ex) {
-            guiManager.close();
-            ExceptionPrinter.printHistory(new CouldNotPerformException("App failed", ex), LOGGER);
-            System.exit(255);
+
+                rsbConnection = new RSBConnection(this);
+            } catch (CouldNotPerformException | JPNotAvailableException | InterruptedException ex) {
+                guiManager.close();
+                appRegistrySynchronizer.deactivate();
+                throw ex;
+            }
+        } catch(Exception ex){
+            criticalError(ex);
         }
+    }
+    
+    public static final void criticalError(Exception ex){
+        ExceptionPrinter.printHistory(new CouldNotPerformException("App failed", ex), LOGGER);
+        Platform.exit();
+        System.exit(255);
     }
     
     @Override
@@ -107,6 +117,36 @@ public class Controller extends AbstractEventHandler{
         }
     }
     
+    public void initializeRegistryConnection() throws InterruptedException, CouldNotPerformException{
+        if(connectedRegistry) return;
+        try {
+            LOGGER.info("Initializing Registry synchronization.");
+            Registries.getUnitRegistry().waitForData(3, TimeUnit.SECONDS);
+            
+            this.appRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder>(guiManager.getObjectGroup(), 
+                    guiManager.getObjectBoxRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), ObjectBoxFactory.getInstance()) {
+                @Override
+                public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
+                    try {
+                        return isApplicableUnit(config);
+                    } catch (InterruptedException ex) {
+                        ExceptionPrinter.printHistory(ex, logger);
+                        return false;
+                    }
+                }
+            };
+            
+            Registries.waitForData(); 
+            appRegistrySynchronizer.activate();
+            connectedRegistry = true;
+        } catch (NotAvailableException ex) {
+            //TODO: Add here what to press.
+            ExceptionPrinter.printHistory(new CouldNotPerformException("Could not connect to the registry. To try reconnecting, hit C.", ex), LOGGER, LogLevel.WARN);
+        } catch (CouldNotPerformException ex) {
+            throw new CouldNotPerformException("The RegistrySynchronization could not be activated although connection to the registry is possible.", ex);
+        }
+    }
+    
     private boolean isApplicableUnit(UnitConfig config) throws InterruptedException {
         if (config != null && isRegistryFlagSet(config.getMetaConfig())) {
             return hasPowerStateService(config) && hasLocationData(config);
@@ -118,11 +158,9 @@ public class Controller extends AbstractEventHandler{
         try {
             AbstractUnitRemote unitRemote = (AbstractUnitRemote) Units.getUnit(config, false);
             unitRemote.getGlobalBoundingBoxCenterPoint3d();
-            System.out.println("Location data available for " +config.getLabel());
             return true;
         } catch (CouldNotPerformException ex) {
-            ExceptionPrinter.printHistory(ex, LOGGER);
-            System.err.println("No location data available for " +config.getLabel());
+            ExceptionPrinter.printHistory(ex, LOGGER, LogLevel.WARN);
             return false;
         }
     }
@@ -147,7 +185,7 @@ public class Controller extends AbstractEventHandler{
         if(meta == null || meta.getEntryList() == null) 
             return false;
         for (EntryType.Entry entry : meta.getEntryList()) {
-            if (REGISTRY_FLAGS.contains(entry.getKey()))
+            if (registryFlags.contains(entry.getKey()))
                 return true;
         }
         return false;

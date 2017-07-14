@@ -27,6 +27,8 @@ import org.openbase.bco.stage.jp.JPLocalInput;
 import org.openbase.bco.stage.jp.JPRayScope;
 import java.util.List;
 import javafx.application.Application;
+import org.openbase.bco.stage.jp.JPDisableRegistry;
+import org.openbase.bco.stage.jp.JPRegistryFlags;
 import org.openbase.jps.core.JPService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,8 @@ public class Stage extends Application {
         JPService.registerProperty(JPPostureScope.class);
         JPService.registerProperty(JPRayScope.class);
         JPService.registerProperty(JPLocalInput.class);
+        JPService.registerProperty(JPRegistryFlags.class);
+        JPService.registerProperty(JPDisableRegistry.class);
         List<String> parameters = getParameters().getRaw();
         String[] args = parameters.toArray(new String[parameters.size()]);
         JPService.parseAndExitOnError(args);

@@ -40,7 +40,6 @@ public class MaterialManager {
     public PhongMaterial cyan;
     public PhongMaterial orange;
     public PhongMaterial grey;
-    public PhongMaterial gray;
     public PhongMaterial white;
     
     public static MaterialManager instance;
