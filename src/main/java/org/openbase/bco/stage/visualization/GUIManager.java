@@ -24,8 +24,6 @@ package org.openbase.bco.stage.visualization;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
@@ -159,11 +157,11 @@ public final class GUIManager {
                         //TODO: show help here.
                         break;
                     case C:
-//                        try {
-//                            controller.initializeRegistryConnection();
-//                        } catch (InterruptedException | CouldNotPerformException ex) {
-//                            Controller.criticalError(ex);
-//                        }
+                        try {
+                            controller.initializeRegistryConnection();
+                        } catch (InterruptedException | CouldNotPerformException ex) {
+                            Controller.criticalError(ex);
+                        }
                         break;
                     default:
                         camera.handle(event);
