@@ -70,24 +70,24 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
             this.config = config;
             AxisAlignedBoundingBox3DFloat boundingBox = config.getPlacementConfig().getShape().getBoundingBox();
             AbstractUnitRemote unit = (AbstractUnitRemote) Units.getUnit(config, false);
-            Point3d center = unit.getGlobalBoundingBoxCenterPoint3d();
-            AxisAngle4d aa =new AxisAngle4d();
-            aa.set(unit.getGlobalRotationQuat4d());
+//            Point3d center = unit.getGlobalBoundingBoxCenterPoint3d();
+//            AxisAngle4d aa =new AxisAngle4d();
+//            aa.set(unit.getGlobalRotationQuat4d());
             
             Platform.runLater(new Runnable() {
                 @Override public void run() {
                     box.setVisible(true);
                     
-                    box.setTranslateX(center.x);
-                    box.setTranslateY(center.y);
-                    box.setTranslateZ(center.z);
+//                    box.setTranslateX(center.x);
+//                    box.setTranslateY(center.y);
+//                    box.setTranslateZ(center.z);
                     
                     box.setWidth(boundingBox.getWidth());
                     box.setDepth(boundingBox.getDepth());
                     box.setHeight(boundingBox.getHeight());
                     
-                    box.setRotationAxis(new Point3D(aa.x, aa.y, aa.z));
-                    box.setRotate(aa.angle/Math.PI*180);
+//                    box.setRotationAxis(new Point3D(aa.x, aa.y, aa.z));
+//                    box.setRotate(aa.angle/Math.PI*180);
                 }
             });
             return this.config;

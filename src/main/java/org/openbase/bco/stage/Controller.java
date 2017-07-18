@@ -24,6 +24,7 @@ package org.openbase.bco.stage;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import javafx.application.Platform;
 import org.openbase.bco.stage.visualization.GUIManager;
 import javafx.stage.Stage;
@@ -65,10 +66,10 @@ public final class Controller extends AbstractEventHandler{
     private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
     private GUIManager guiManager;
     private RSBConnection rsbConnection;
-    private JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder> appRegistrySynchronizer;
+//    private JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder> objectBoxRegistrySynchronizer;
     
-    private List<String> registryFlags;
-    private boolean connectedRegistry = false;
+//    private List<String> registryFlags;
+//    private boolean connectedRegistry = false;
     
     // TODO list:
     // -InterruptedException niemals fangen!!!
@@ -86,16 +87,17 @@ public final class Controller extends AbstractEventHandler{
             }
 
             try {
-                registryFlags = JPService.getProperty(JPRegistryFlags.class).getValue();
-                
-                if(!JPService.getProperty(JPDisableRegistry.class).getValue()){
-                    initializeRegistryConnection();
-                }
+//                registryFlags = JPService.getProperty(JPRegistryFlags.class).getValue();
+//                
+//                if(!JPService.getProperty(JPDisableRegistry.class).getValue()){
+//                    initializeRegistryConnection();
+//                }
 
                 rsbConnection = new RSBConnection(this);
-            } catch (CouldNotPerformException | JPNotAvailableException | InterruptedException ex) {
+//            } catch (CouldNotPerformException | JPNotAvailableException | InterruptedException ex) {
+            } catch (CouldNotPerformException | InterruptedException ex) {
                 guiManager.close();
-                appRegistrySynchronizer.deactivate();
+//                objectBoxRegistrySynchronizer.deactivate();
                 throw ex;
             }
         } catch(Exception ex){
@@ -127,77 +129,77 @@ public final class Controller extends AbstractEventHandler{
         }
     }
     
-    public void initializeRegistryConnection() throws InterruptedException, CouldNotPerformException{
-        if(connectedRegistry) return;
-        try {
-            LOGGER.info("Initializing Registry synchronization.");
-            Registries.getUnitRegistry().waitForData(3, TimeUnit.SECONDS);
-            
-            this.appRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder>(guiManager.getObjectGroup(), 
-                    guiManager.getObjectBoxRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), ObjectBoxFactory.getInstance()) {
-                @Override
-                public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
-                    try {
-                        return isApplicableUnit(config);
-                    } catch (InterruptedException ex) {
-                        ExceptionPrinter.printHistory(ex, logger);
-                        return false;
-                    }
-                }
-            };
-            
-            Registries.waitForData(); 
-            appRegistrySynchronizer.activate();
-            connectedRegistry = true;
-        } catch (NotAvailableException ex) {
-            //TODO: Add here what to press.
-            ExceptionPrinter.printHistory(new CouldNotPerformException("Could not connect to the registry. To try reconnecting, hit C.", ex), LOGGER, LogLevel.WARN);
-        } catch (CouldNotPerformException ex) {
-            throw new CouldNotPerformException("The RegistrySynchronization could not be activated although connection to the registry is possible.", ex);
-        }
-    }
-    
-    private boolean isApplicableUnit(UnitConfig config) throws InterruptedException {
-        if (config != null && isRegistryFlagSet(config.getMetaConfig())) {
-            return hasPowerStateService(config) && hasLocationData(config);
-        }
-        return false;
-    }
-    
-    private boolean hasLocationData(UnitConfig config) throws InterruptedException{
-        try {
-            AbstractUnitRemote unitRemote = (AbstractUnitRemote) Units.getUnit(config, false);
-            unitRemote.getGlobalBoundingBoxCenterPoint3d();
-            return true;
-        } catch (CouldNotPerformException ex) {
-            ExceptionPrinter.printHistory(ex, LOGGER, LogLevel.WARN);
-            return false;
-        }
-    }
-    
-    private boolean hasPowerStateService(UnitConfig config) throws InterruptedException{
-        for (ServiceConfigType.ServiceConfig sc : config.getServiceConfigList()) {
-            ServiceTemplateType.ServiceTemplate.ServiceType type;
-            try {
-                type = getUnitRegistry().getServiceTemplateById(sc.getServiceDescription().getServiceTemplateId()).getType();
-            } catch (CouldNotPerformException ex) {
-                type = sc.getServiceDescription().getType();
-            } 
-            if (ServiceTemplateType.ServiceTemplate.ServiceType.POWER_STATE_SERVICE == type
-                    && ServiceTemplateType.ServiceTemplate.ServicePattern.OPERATION == sc.getServiceDescription().getPattern()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isRegistryFlagSet(MetaConfigType.MetaConfig meta){
-        if(meta == null || meta.getEntryList() == null) 
-            return false;
-        for (EntryType.Entry entry : meta.getEntryList()) {
-            if (registryFlags.contains(entry.getKey()))
-                return true;
-        }
-        return false;
-    }
+//    public void initializeRegistryConnection() throws InterruptedException, CouldNotPerformException{
+//        if(connectedRegistry) return;
+//        try {
+//            LOGGER.info("Initializing Registry synchronization.");
+//            Registries.getUnitRegistry().waitForData(3, TimeUnit.SECONDS);
+//            
+//            this.objectBoxRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder>(guiManager.getObjectGroup(), 
+//                    guiManager.getObjectBoxRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), ObjectBoxFactory.getInstance()) {
+//                @Override
+//                public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
+//                    try {
+//                        return isApplicableUnit(config);
+//                    } catch (InterruptedException ex) {
+//                        ExceptionPrinter.printHistory(ex, logger);
+//                        return false;
+//                    }
+//                }
+//            };
+//            
+//            Registries.waitForData(); 
+//            objectBoxRegistrySynchronizer.activate();
+//            connectedRegistry = true;
+//        } catch (NotAvailableException ex) {
+//            //TODO: Add here what to press.
+//            ExceptionPrinter.printHistory(new CouldNotPerformException("Could not connect to the registry. To try reconnecting, hit C.", ex), LOGGER, LogLevel.WARN);
+//        } catch (CouldNotPerformException ex) {
+//            throw new CouldNotPerformException("The RegistrySynchronization could not be activated although connection to the registry is possible.", ex);
+//        }
+//    }
+//    
+//    private boolean isApplicableUnit(UnitConfig config) throws InterruptedException {
+//        if (config != null && isRegistryFlagSet(config.getMetaConfig())) {
+//            return hasPowerStateService(config) && hasLocationData(config);
+//        }
+//        return false;
+//    }
+//    
+//    private boolean hasLocationData(UnitConfig config) throws InterruptedException{
+//        try {
+//            AbstractUnitRemote unitRemote = (AbstractUnitRemote) Units.getUnit(config, false);
+//            unitRemote.getGlobalBoundingBoxCenterPoint3d();
+//            return true;
+//        } catch (CouldNotPerformException ex) {
+//            ExceptionPrinter.printHistory(ex, LOGGER, LogLevel.WARN);
+//            return false;
+//        }
+//    }
+//    
+//    private boolean hasPowerStateService(UnitConfig config) throws InterruptedException{
+//        for (ServiceConfigType.ServiceConfig sc : config.getServiceConfigList()) {
+//            ServiceTemplateType.ServiceTemplate.ServiceType type;
+//            try {
+//                type = getUnitRegistry().getServiceTemplateById(sc.getServiceDescription().getServiceTemplateId()).getType();
+//            } catch (CouldNotPerformException ex) {
+//                type = sc.getServiceDescription().getType();
+//            } 
+//            if (ServiceTemplateType.ServiceTemplate.ServiceType.POWER_STATE_SERVICE == type
+//                    && ServiceTemplateType.ServiceTemplate.ServicePattern.OPERATION == sc.getServiceDescription().getPattern()) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//    
+//    private boolean isRegistryFlagSet(MetaConfigType.MetaConfig meta){
+//        if(meta == null || meta.getEntryList() == null) 
+//            return false;
+//        for (EntryType.Entry entry : meta.getEntryList()) {
+//            if (registryFlags.contains(entry.getKey()))
+//                return true;
+//        }
+//        return false;
+//    }
 }
