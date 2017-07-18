@@ -26,7 +26,6 @@ import com.google.protobuf.GeneratedMessage;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import org.openbase.jul.exception.CouldNotPerformException;
-import org.openbase.jul.exception.VerificationFailedException;
 import org.openbase.jul.exception.InstantiationException;
 import org.openbase.jul.pattern.Factory;
 import org.openbase.jul.storage.registry.RegistrySynchronizer;
@@ -84,7 +83,4 @@ public abstract class JavaFX3dObjectRegistrySynchronizer<KEY, ENTRY extends Java
 ////            entry.disable();
 ////        }
 //    }
-    
-    @Override
-    public abstract boolean verifyConfig(final CONFIG_M config) throws VerificationFailedException;
 }

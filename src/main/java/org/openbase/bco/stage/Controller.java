@@ -24,18 +24,16 @@ package org.openbase.bco.stage;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import javafx.application.Platform;
 import org.openbase.bco.stage.visualization.GUIManager;
 import javafx.stage.Stage;
-import org.openbase.bco.dal.remote.unit.AbstractUnitRemote;
-import org.openbase.bco.dal.remote.unit.Units;
 import org.openbase.bco.registry.remote.Registries;
 import static org.openbase.bco.registry.remote.Registries.getUnitRegistry;
 import org.openbase.bco.stage.jp.JPDisableRegistry;
 import org.openbase.bco.stage.jp.JPRegistryFlags;
 import org.openbase.bco.stage.registry.ObjectBoxFactory;
 import org.openbase.bco.stage.registry.JavaFX3dObjectRegistrySynchronizer;
+import org.openbase.bco.stage.registry.PointingUnitChecker;
 import org.openbase.bco.stage.rsb.RSBConnection;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
@@ -52,10 +50,6 @@ import org.openbase.jul.exception.InstantiationException;
 import org.openbase.jul.exception.NotAvailableException;
 import org.openbase.jul.exception.VerificationFailedException;
 import org.openbase.jul.exception.printer.LogLevel;
-import rst.configuration.EntryType;
-import rst.configuration.MetaConfigType;
-import rst.domotic.service.ServiceConfigType;
-import rst.domotic.service.ServiceTemplateType;
 import rst.domotic.unit.UnitConfigType.UnitConfig;
 import rst.domotic.unit.UnitProbabilityCollectionType.UnitProbabilityCollection;
 /**
@@ -77,6 +71,7 @@ public final class Controller extends AbstractEventHandler{
     // -Auf Bearbeitung von Ticket #52 warten, bzw code entsprechend anpasssen.
     // -JavaFx stuff wie Line oder Ray in jul.visual.javafx einpflegen
     // - Remove mainLoop and replace by runLater stuff in the components.
+    // -Check behavior of RegistrySynchronizer in case an unverified object becomes verified. (Should register but maybe only update called).
     
     public Controller(Stage primaryStage){
         try{
@@ -139,7 +134,7 @@ public final class Controller extends AbstractEventHandler{
                 @Override
                 public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
                     try {
-                        return isApplicableUnit(config);
+                        return PointingUnitChecker.isApplicableUnit(config, registryFlags);
                     } catch (InterruptedException ex) {
                         ExceptionPrinter.printHistory(ex, logger);
                         return false;
@@ -156,49 +151,5 @@ public final class Controller extends AbstractEventHandler{
         } catch (CouldNotPerformException ex) {
             throw new CouldNotPerformException("The RegistrySynchronization could not be activated although connection to the registry is possible.", ex);
         }
-    }
-    
-    private boolean isApplicableUnit(UnitConfig config) throws InterruptedException {
-        if (config != null && isRegistryFlagSet(config.getMetaConfig())) {
-            return hasPowerStateService(config) && hasLocationData(config);
-        }
-        return false;
-    }
-    
-    private boolean hasLocationData(UnitConfig config) throws InterruptedException{
-        try {
-            AbstractUnitRemote unitRemote = (AbstractUnitRemote) Units.getUnit(config, false);
-            unitRemote.getGlobalBoundingBoxCenterPoint3d();
-            return true;
-        } catch (CouldNotPerformException ex) {
-            ExceptionPrinter.printHistory(ex, LOGGER, LogLevel.WARN);
-            return false;
-        }
-    }
-    
-    private boolean hasPowerStateService(UnitConfig config) throws InterruptedException{
-        for (ServiceConfigType.ServiceConfig sc : config.getServiceConfigList()) {
-            ServiceTemplateType.ServiceTemplate.ServiceType type;
-            try {
-                type = getUnitRegistry().getServiceTemplateById(sc.getServiceDescription().getServiceTemplateId()).getType();
-            } catch (CouldNotPerformException ex) {
-                type = sc.getServiceDescription().getType();
-            } 
-            if (ServiceTemplateType.ServiceTemplate.ServiceType.POWER_STATE_SERVICE == type
-                    && ServiceTemplateType.ServiceTemplate.ServicePattern.OPERATION == sc.getServiceDescription().getPattern()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isRegistryFlagSet(MetaConfigType.MetaConfig meta){
-        if(meta == null || meta.getEntryList() == null) 
-            return false;
-        for (EntryType.Entry entry : meta.getEntryList()) {
-            if (registryFlags.contains(entry.getKey()))
-                return true;
-        }
-        return false;
     }
 }

@@ -24,8 +24,6 @@ package org.openbase.bco.stage.visualization;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
