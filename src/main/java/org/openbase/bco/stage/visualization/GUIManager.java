@@ -159,11 +159,11 @@ public final class GUIManager {
                         //TODO: show help here.
                         break;
                     case C:
-//                        try {
-//                            controller.initializeRegistryConnection();
-//                        } catch (InterruptedException | CouldNotPerformException ex) {
-//                            Controller.criticalError(ex);
-//                        }
+                        try {
+                            controller.initializeRegistryConnection();
+                        } catch (InterruptedException | CouldNotPerformException ex) {
+                            Controller.criticalError(ex);
+                        }
                         break;
                     default:
                         camera.handle(event);
