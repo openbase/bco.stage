@@ -22,9 +22,6 @@ package org.openbase.bco.stage.visualization;
  * #L%
  */
 
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.geometry.Point3D;
 import javafx.scene.paint.Material;
@@ -74,21 +71,19 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
             AxisAngle4d aa =new AxisAngle4d();
             aa.set(unit.getGlobalRotationQuat4d());
             
-            Platform.runLater(new Runnable() {
-                @Override public void run() {
-                    box.setVisible(true);
-                    
-                    box.setTranslateX(center.x);
-                    box.setTranslateY(center.y);
-                    box.setTranslateZ(center.z);
-                    
-                    box.setWidth(boundingBox.getWidth());
-                    box.setDepth(boundingBox.getDepth());
-                    box.setHeight(boundingBox.getHeight());
-                    
-                    box.setRotationAxis(new Point3D(aa.x, aa.y, aa.z));
-                    box.setRotate(aa.angle/Math.PI*180);
-                }
+            Platform.runLater(() -> {
+                box.setVisible(true);
+                
+                box.setTranslateX(center.x);
+                box.setTranslateY(center.y);
+                box.setTranslateZ(center.z);
+                
+                box.setWidth(boundingBox.getWidth());
+                box.setDepth(boundingBox.getDepth());
+                box.setHeight(boundingBox.getHeight());
+                
+                box.setRotationAxis(new Point3D(aa.x, aa.y, aa.z));
+                box.setRotate(aa.angle/Math.PI*180);
             });
             return this.config;
         } catch (NotAvailableException ex) {
@@ -139,11 +134,8 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
     }
     
     private void setMaterial(Material material){
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                box.setMaterial(material);
-            }
-        });
+        Platform.runLater(() -> 
+                box.setMaterial(material)
+        );
     }
 }

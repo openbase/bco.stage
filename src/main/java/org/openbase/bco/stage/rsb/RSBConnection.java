@@ -36,7 +36,6 @@ import rsb.Listener;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.config.ParticipantConfig;
-import rsb.config.TransportConfig;
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
 import rsb.util.Properties;
@@ -125,9 +124,9 @@ public class RSBConnection {
         ParticipantConfig localConfig = Factory.getInstance().getDefaultParticipantConfig().copy();
         Properties localProperties = new Properties();
         localProperties.setProperty("transport.socket.host", "localhost");
-        for (TransportConfig tc : localConfig.getTransports().values()) {
-            tc.setEnabled(false);
-        }
+        localConfig.getTransports().values().forEach(
+                tc -> tc.setEnabled(false)
+        );
         localConfig.getOrCreateTransport("socket").setEnabled(true);
         localConfig.getOrCreateTransport("socket").setOptions(localProperties);
         return localConfig;

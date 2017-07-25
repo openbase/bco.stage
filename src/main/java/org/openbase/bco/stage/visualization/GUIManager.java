@@ -134,39 +134,36 @@ public final class GUIManager {
         LOGGER.debug("Connecting camera to the scene.");
         scene.setOnMousePressed(camera);
         scene.setOnMouseDragged(camera);
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>(){
-            @Override
-            public void handle(KeyEvent event) {
-                switch(event.getCode()){
-                    case X:
-                        axisGroup.setVisible(!axisGroup.isVisible());
-                        break;
-                    case R:
-                        rayGroup.setVisible(!rayGroup.isVisible());
-                        break;
-                    case P:
-                        skeletonGroup.setVisible(!skeletonGroup.isVisible());
-                        break;
-                    case M:
-                        room.setVisible(!room.isVisible());
-                        break;
-                    case O:
-                        objectGroup.setVisible(!objectGroup.isVisible());
-                        break;
-                    case H:
-                        //TODO: show help here.
-                        break;
-                    case C:
-                        try {
-                            controller.initializeRegistryConnection();
-                        } catch (InterruptedException | CouldNotPerformException ex) {
-                            Controller.criticalError(ex);
-                        }
-                        break;
-                    default:
-                        camera.handle(event);
-                        break;
-                }
+        scene.setOnKeyPressed(event -> {
+            switch(event.getCode()){
+                case X:
+                    axisGroup.setVisible(!axisGroup.isVisible());
+                    break;
+                case R:
+                    rayGroup.setVisible(!rayGroup.isVisible());
+                    break;
+                case P:
+                    skeletonGroup.setVisible(!skeletonGroup.isVisible());
+                    break;
+                case M:
+                    room.setVisible(!room.isVisible());
+                    break;
+                case O:
+                    objectGroup.setVisible(!objectGroup.isVisible());
+                    break;
+                case H:
+                    //TODO: show help here.
+                    break;
+                case C:
+                    try {
+                        controller.initializeRegistryConnection();
+                    } catch (InterruptedException | CouldNotPerformException ex) {
+                        Controller.criticalError(ex);
+                    }
+                    break;
+                default:
+                    camera.handle(event);
+                    break;
             }
         });
         scene.setOnKeyReleased(camera);
@@ -197,47 +194,41 @@ public final class GUIManager {
     }
     
     private synchronized void updateOrCreateSkeletons(TrackedPostures3DFloat postures){
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                for(int i = 0; i < postures.getPostureCount(); i++){
-                    TrackedPosture3DFloat posture = postures.getPosture(i);
-                    if(posture.getConfidenceCount() > 0){
-                        skeletons[i].updatePositions(posture);
-                        skeletons[i].setVisible(true);
-                    } else {
-                        skeletons[i].setVisible(false);
-                    }
+        Platform.runLater(() -> {
+            for(int i = 0; i < postures.getPostureCount(); i++){
+                TrackedPosture3DFloat posture = postures.getPosture(i);
+                if(posture.getConfidenceCount() > 0){
+                    skeletons[i].updatePositions(posture);
+                    skeletons[i].setVisible(true);
+                } else {
+                    skeletons[i].setVisible(false);
                 }
             }
         });
     }
     
     private synchronized void updateOrCreateRays(PointingRay3DFloatCollection pointingRays){
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                LOGGER.trace("Updating or creating rays.");
-                int difference = pointingRays.getElementCount() - rays.size();
-                if(difference > 0){
-                    LOGGER.trace("Adding new rays.");
-                    for(int i = 0; i < difference; i++){
-                        PointingRay r = new PointingRay();
-                        rays.add(r);
-                        rayGroup.getChildren().add(r);
-                    }
-                } else {
-                    LOGGER.trace("Removing rays.");
-                    for(int i = 0; i < -difference; i++){
-                        PointingRay r = rays.get(pointingRays.getElementCount());
-                        rayGroup.getChildren().remove(r);
-                        rays.remove(pointingRays.getElementCount());
-                    }
+        Platform.runLater(() -> {
+            LOGGER.trace("Updating or creating rays.");
+            int difference = pointingRays.getElementCount() - rays.size();
+            if(difference > 0){
+                LOGGER.trace("Adding new rays.");
+                for(int i = 0; i < difference; i++){
+                    PointingRay r = new PointingRay();
+                    rays.add(r);
+                    rayGroup.getChildren().add(r);
                 }
-                LOGGER.trace("Updating existing rays.");
-                for(int i = 0; i < pointingRays.getElementCount(); i++){
-                    rays.get(i).update(pointingRays.getElement(i));
+            } else {
+                LOGGER.trace("Removing rays.");
+                for(int i = 0; i < -difference; i++){
+                    PointingRay r = rays.get(pointingRays.getElementCount());
+                    rayGroup.getChildren().remove(r);
+                    rays.remove(pointingRays.getElementCount());
                 }
+            }
+            LOGGER.trace("Updating existing rays.");
+            for(int i = 0; i < pointingRays.getElementCount(); i++){
+                rays.get(i).update(pointingRays.getElement(i));
             }
         });
     }

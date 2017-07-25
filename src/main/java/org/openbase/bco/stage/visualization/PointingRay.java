@@ -22,9 +22,7 @@ package org.openbase.bco.stage.visualization;
  * #L%
  */
 
-import javafx.geometry.Point3D;
 import javafx.scene.paint.Material;
-import rst.math.Vec3DFloatType;
 import rst.tracking.PointingRay3DFloatType;
 
 /**
