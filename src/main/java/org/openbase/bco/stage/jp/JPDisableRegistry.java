@@ -23,12 +23,15 @@ package org.openbase.bco.stage.jp;
  */
 
 /**
+ * JavaProperty used to signal that the program should not try to connect to the registry.
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class JPDisableRegistry extends org.openbase.jps.preset.AbstractJPBoolean {
+    /** The identifiers that can be used in front of the command line argument. */
     public final static String[] COMMAND_IDENTIFIERS = {"-dr", "--disable-registry"};
 
+    /** Constructor. */
     public JPDisableRegistry() {
         super(COMMAND_IDENTIFIERS);
     }

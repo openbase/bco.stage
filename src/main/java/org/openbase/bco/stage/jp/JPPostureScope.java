@@ -26,12 +26,15 @@ import org.openbase.jps.exception.JPNotAvailableException;
 import rsb.Scope;
 
 /**
+ * JPScope used to parse the scope used for receiving posture events from a command line argument.
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class JPPostureScope extends AbstractJPScope {
+    /** The identifiers that can be used in front of the command line argument. */
     public final static String[] COMMAND_IDENTIFIERS = {"--ps", "--posture-in-scope"};
     
+    /** Constructor. */
     public JPPostureScope(){
         super(COMMAND_IDENTIFIERS);
     }

@@ -26,12 +26,15 @@ import org.openbase.jps.exception.JPNotAvailableException;
 import rsb.Scope;
 
 /**
+ * JPScope used to parse the scope used for receiving pointing ray events from a command line argument.
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class JPRayScope extends AbstractJPScope {
+    /** The identifiers that can be used in front of the command line argument. */
     public final static String[] COMMAND_IDENTIFIERS = {"--rs", "--ray-in-scope"};
     
+    /** Constructor. */
     public JPRayScope(){
         super(COMMAND_IDENTIFIERS);
     }

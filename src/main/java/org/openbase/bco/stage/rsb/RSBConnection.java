@@ -44,33 +44,56 @@ import rst.tracking.PointingRay3DFloatCollectionType.PointingRay3DFloatCollectio
 import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
 
 /**
+ * This class handles the RSB connections of the project.
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class RSBConnection {
+    /** Logger instance. */
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(RSBConnection.class);
+    /** RSB Listener used to receive posture events. */
     private Listener skeletonListener;
+    /** RSB Listener used to receive pointing ray events. */
     private Listener rayListener;
+    /** RSB Listener used to receive selected unit events. */
     private Listener selectedUnitListener;
-    private Scope postureScope;
-    private Scope rayScope;
-    private Scope selectedUnitScope;
     
+    /**
+     * Constructor.
+     * 
+     * @param handler is used to handle incoming events.
+     * @throws CouldNotPerformException is thrown, if the initialization of the class fails.
+     * @throws InterruptedException is thrown in case of an external interruption.
+     */
     public RSBConnection(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException {
         LOGGER.info("Initializing RSB connection.");
         initializeListeners(handler);
     }
     
+    /**
+     * Deactivates the RSB connection.
+     * 
+     * @throws CouldNotPerformException is thrown, if the deactivation fails.
+     * @throws InterruptedException is thrown in case of an external interruption.
+     */
     public void deactivate() throws CouldNotPerformException, InterruptedException{
         LOGGER.info("Deactivating RSB connection.");
         try{
             skeletonListener.deactivate();
             rayListener.deactivate();
+            selectedUnitListener.deactivate();
         } catch (RSBException ex) {
             throw new CouldNotPerformException("Could not deactivate informer and listener.", ex);
         } 
     }
     
+    /**
+     * Initializes the RSB Listeners.
+     * 
+     * @param handler is used to handle incoming events.
+     * @throws CouldNotPerformException is thrown, if the initialization of the Listeners fails.
+     * @throws InterruptedException is thrown in case of an external interruption.
+     */
     private void initializeListeners(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException{
         LOGGER.debug("Registering converters.");
         final ProtocolBufferConverter<TrackedPostures3DFloat> postureConverter = new ProtocolBufferConverter<>(
@@ -90,9 +113,9 @@ public class RSBConnection {
         
         
         try {
-            postureScope = JPService.getProperty(JPPostureScope.class).getValue();
-            rayScope = JPService.getProperty(JPRayScope.class).getValue();
-            selectedUnitScope = JPService.getProperty(JPSelectedUnitScope.class).getValue();
+            Scope postureScope = JPService.getProperty(JPPostureScope.class).getValue();
+            Scope rayScope = JPService.getProperty(JPRayScope.class).getValue();
+            Scope selectedUnitScope = JPService.getProperty(JPSelectedUnitScope.class).getValue();
             LOGGER.info("Initializing RSB Posture Listener on scope: " + postureScope);
             LOGGER.info("Initializing RSB Ray Listener on scope: " + rayScope);
             LOGGER.info("Initializing RSB Selected Unit Listener on scope: " + selectedUnitScope);
@@ -120,15 +143,20 @@ public class RSBConnection {
         }
     }
 
+    /**
+     * Creates an RSB configuration for connecting via socket and localhost.
+     * 
+     * @return the local communication configuration.
+     */
     private ParticipantConfig getLocalConfig() {
         ParticipantConfig localConfig = Factory.getInstance().getDefaultParticipantConfig().copy();
         Properties localProperties = new Properties();
         localProperties.setProperty("transport.socket.host", "localhost");
-        localConfig.getTransports().values().forEach(
-                tc -> tc.setEnabled(false)
-        );
+        localConfig.getTransports().values().forEach((tc) -> {
+            tc.setEnabled(false);
+        });
         localConfig.getOrCreateTransport("socket").setEnabled(true);
         localConfig.getOrCreateTransport("socket").setOptions(localProperties);
         return localConfig;
-    }   
+    }
 }
