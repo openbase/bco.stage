@@ -173,6 +173,7 @@
         <dependency.jul.version>1.4-SNAPSHOT</dependency.jul.version>
         <dependency.bco.registry.version>1.4-SNAPSHOT</dependency.bco.registry.version>
         <dependency.bco.dal.version>1.4-SNAPSHOT</dependency.bco.dal.version>
+        <dependency.bco.psc.version>1.0-SNAPSHOT</dependency.bco.psc.version>
     </properties>
 
     <dependencies>
@@ -217,6 +218,11 @@
             <groupId>org.openbase.bco</groupId>
             <artifactId>dal.remote</artifactId>
             <version>${dependency.bco.dal.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openbase.bco</groupId>
+            <artifactId>psc.lib</artifactId>
+            <version>${dependency.bco.psc.version}</version>
         </dependency>
         <dependency>
             <groupId>java3d</groupId>

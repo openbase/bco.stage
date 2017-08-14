@@ -22,10 +22,10 @@ package org.openbase.bco.stage.rsb;
  * #L%
  */
 
-import org.openbase.bco.stage.jp.JPPostureScope;
-import org.openbase.bco.stage.jp.JPLocalInput;
-import org.openbase.bco.stage.jp.JPRayScope;
-import org.openbase.bco.stage.jp.JPSelectedUnitScope;
+import org.openbase.bco.psc.lib.jp.JPLocalInput;
+import org.openbase.bco.psc.lib.jp.JPPostureScope;
+import org.openbase.bco.psc.lib.jp.JPRayScope;
+import org.openbase.bco.psc.lib.jp.JPSelectedUnitScope;
 import org.openbase.jps.core.JPService;
 import org.openbase.jps.exception.JPNotAvailableException;
 import org.openbase.jul.exception.CouldNotPerformException;

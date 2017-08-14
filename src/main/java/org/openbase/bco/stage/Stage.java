@@ -22,13 +22,13 @@ package org.openbase.bco.stage;
  * #L%
  */
 
-import org.openbase.bco.stage.jp.JPPostureScope;
-import org.openbase.bco.stage.jp.JPLocalInput;
-import org.openbase.bco.stage.jp.JPRayScope;
 import java.util.List;
 import javafx.application.Application;
+import org.openbase.bco.psc.lib.jp.JPLocalInput;
+import org.openbase.bco.psc.lib.jp.JPPostureScope;
+import org.openbase.bco.psc.lib.jp.JPRayScope;
+import org.openbase.bco.psc.lib.jp.JPRegistryFlags;
 import org.openbase.bco.stage.jp.JPDisableRegistry;
-import org.openbase.bco.stage.jp.JPRegistryFlags;
 import org.openbase.jps.core.JPService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

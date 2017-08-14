@@ -22,13 +22,13 @@ package org.openbase.bco.stage.visualization;
  * #L%
  */
 
-import org.openbase.bco.stage.pointing.Joints;
-import org.openbase.bco.stage.pointing.JointPair;
 import java.util.List;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Material;
 import javafx.scene.shape.Sphere;
+import org.openbase.bco.psc.lib.pointing.JointPair;
+import org.openbase.bco.psc.lib.pointing.Joints;
 import rst.geometry.TranslationType;
 import rst.tracking.TrackedPosture3DFloatType;
 
