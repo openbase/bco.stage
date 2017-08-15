@@ -24,6 +24,7 @@ package org.openbase.bco.stage.visualization;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.geometry.Point3D;
 import javafx.scene.DepthTest;
@@ -41,7 +42,8 @@ import org.openbase.jul.exception.printer.LogLevel;
 import org.openbase.jul.storage.registry.SynchronizableRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rst.tracking.PointingRay3DFloatCollectionType.PointingRay3DFloatCollection;
+import rst.tracking.PointingRay3DFloatDistributionCollectionType.PointingRay3DFloatDistributionCollection;
+import rst.tracking.PointingRay3DFloatType.PointingRay3DFloat;
 import rst.tracking.TrackedPosture3DFloatType.TrackedPosture3DFloat;
 import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
 
@@ -124,8 +126,13 @@ public final class GUIManager {
         updateOrCreateSkeletons(postures);
     }
     
-    public synchronized void updateRayData(PointingRay3DFloatCollection pointingRays){
-        updateOrCreateRays(pointingRays);
+    public synchronized void updateRayData(PointingRay3DFloatDistributionCollection pointingRays){
+        updateOrCreateRays(pointingRays.getElementList().stream()
+                .map((rayDistribution) -> rayDistribution.getRayList())
+                .flatMap(List::stream)
+                .collect(Collectors.toList()));
+//        PointingRay3DFloatDistribution distrib;
+//        distrib.getRayList();
     }
     
     private void connectCamera(Scene scene){
@@ -205,10 +212,10 @@ public final class GUIManager {
         });
     }
     
-    private synchronized void updateOrCreateRays(PointingRay3DFloatCollection pointingRays){
+    private synchronized void updateOrCreateRays(List<PointingRay3DFloat> pointingRays){
         Platform.runLater(() -> {
             LOGGER.trace("Updating or creating rays.");
-            int difference = pointingRays.getElementCount() - rays.size();
+            int difference = pointingRays.size() - rays.size();
             if(difference > 0){
                 LOGGER.trace("Adding new rays.");
                 for(int i = 0; i < difference; i++){
@@ -219,14 +226,14 @@ public final class GUIManager {
             } else {
                 LOGGER.trace("Removing rays.");
                 for(int i = 0; i < -difference; i++){
-                    PointingRay r = rays.get(pointingRays.getElementCount());
+                    PointingRay r = rays.get(pointingRays.size());
                     rayGroup.getChildren().remove(r);
-                    rays.remove(pointingRays.getElementCount());
+                    rays.remove(pointingRays.size());
                 }
             }
             LOGGER.trace("Updating existing rays.");
-            for(int i = 0; i < pointingRays.getElementCount(); i++){
-                rays.get(i).update(pointingRays.getElement(i));
+            for(int i = 0; i < pointingRays.size(); i++){
+                rays.get(i).update(pointingRays.get(i));
             }
         });
     }

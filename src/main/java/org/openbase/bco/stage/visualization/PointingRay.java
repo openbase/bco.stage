@@ -61,8 +61,12 @@ public class PointingRay extends Ray {
             case HAND:
                 material = PhongMaterialManager.getInstance().margenta;
                 break;
+            case OTHER:
+                material = PhongMaterialManager.getInstance().red;
+                break;
             default:
                 material = PhongMaterialManager.getInstance().white;
+                break;
         }
         super.setMaterial(material);
         super.setWidth(ray.getCertainty()*WIDTH_SPAN + MIN_WIDTH);

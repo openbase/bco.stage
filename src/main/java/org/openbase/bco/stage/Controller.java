@@ -41,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rsb.AbstractEventHandler;
 import rsb.Event;
-import rst.tracking.PointingRay3DFloatCollectionType.PointingRay3DFloatCollection;
 import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
 import org.openbase.bco.stage.visualization.ObjectBox;
 import org.openbase.jps.core.JPService;
@@ -52,6 +51,7 @@ import org.openbase.jul.exception.VerificationFailedException;
 import org.openbase.jul.exception.printer.LogLevel;
 import rst.domotic.unit.UnitConfigType.UnitConfig;
 import rst.domotic.unit.UnitProbabilityCollectionType.UnitProbabilityCollection;
+import rst.tracking.PointingRay3DFloatDistributionCollectionType.PointingRay3DFloatDistributionCollection;
 /**
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
@@ -111,9 +111,9 @@ public final class Controller extends AbstractEventHandler{
             LOGGER.trace("New TrackedPostures3DFloat event received.");
             TrackedPostures3DFloat postures = (TrackedPostures3DFloat) event.getData();
             guiManager.updateSkeletonData(postures);
-        } else if(event.getData() instanceof PointingRay3DFloatCollection){
+        } else if(event.getData() instanceof PointingRay3DFloatDistributionCollection){
             LOGGER.trace("New PointingRay3DFloatCollection event received.");
-            PointingRay3DFloatCollection pointingRays = (PointingRay3DFloatCollection) event.getData();
+            PointingRay3DFloatDistributionCollection pointingRays = (PointingRay3DFloatDistributionCollection) event.getData();
             guiManager.updateRayData(pointingRays);
         } else if(event.getData() instanceof UnitProbabilityCollection) {
             LOGGER.trace("New UnitProbabilityCollection event received.");

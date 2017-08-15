@@ -40,7 +40,7 @@ import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
 import rsb.util.Properties;
 import rst.domotic.unit.UnitProbabilityCollectionType.UnitProbabilityCollection;
-import rst.tracking.PointingRay3DFloatCollectionType.PointingRay3DFloatCollection;
+import rst.tracking.PointingRay3DFloatDistributionCollectionType.PointingRay3DFloatDistributionCollection;
 import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
 
 /**
@@ -101,8 +101,8 @@ public class RSBConnection {
         DefaultConverterRepository.getDefaultConverterRepository()
             .addConverter(postureConverter);
         
-        final ProtocolBufferConverter<PointingRay3DFloatCollection> rayConverter = new ProtocolBufferConverter<>(
-                    PointingRay3DFloatCollection.getDefaultInstance());
+        final ProtocolBufferConverter<PointingRay3DFloatDistributionCollection> rayConverter = new ProtocolBufferConverter<>(
+                    PointingRay3DFloatDistributionCollection.getDefaultInstance());
         DefaultConverterRepository.getDefaultConverterRepository()
             .addConverter(rayConverter);
         
