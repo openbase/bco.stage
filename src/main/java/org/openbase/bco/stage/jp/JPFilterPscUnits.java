@@ -22,28 +22,30 @@ package org.openbase.bco.stage.jp;
  * #L%
  */
 
+import org.openbase.jps.preset.AbstractJPBoolean;
+
 /**
- * JavaProperty used to signal that the program should not try to connect to the registry.
+ * JavaProperty used to signal that the program should use the psc unit filters.
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class JPDisableRegistry extends org.openbase.jps.preset.AbstractJPBoolean {
+public class JPFilterPscUnits extends AbstractJPBoolean {
     /** The identifiers that can be used in front of the command line argument. */
-    public final static String[] COMMAND_IDENTIFIERS = {"--dr", "--disable-registry"};
+    public final static String[] COMMAND_IDENTIFIERS = {"-f", "--filter-units"};
 
     /** Constructor. */
-    public JPDisableRegistry() {
+    public JPFilterPscUnits() {
         super(COMMAND_IDENTIFIERS);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc} 
      * 
      * @return {@inheritDoc}
      */
     @Override
     public String getDescription() {
-        return "If true, the program will not connect to the registry and thus not load any unit objects.";
+        return "If true, the program will use the psc unit filters specified in --fl.";
     }
     
 }

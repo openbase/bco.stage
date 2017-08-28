@@ -119,6 +119,7 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
                     try {
                         Thread.sleep(time_diff);
                     } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
                         Controller.criticalError(ex);
                     }
                     time_diff = getHighlightEndTime() - System.currentTimeMillis();

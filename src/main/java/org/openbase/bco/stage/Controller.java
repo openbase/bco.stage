@@ -24,14 +24,16 @@ package org.openbase.bco.stage;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import javafx.application.Platform;
 import org.openbase.bco.stage.visualization.GUIManager;
 import javafx.stage.Stage;
-import org.openbase.bco.psc.lib.jp.JPRegistryFlags;
+import org.openbase.bco.psc.lib.jp.JPPscUnitFilterList;
 import org.openbase.bco.psc.lib.registry.PointingUnitChecker;
 import org.openbase.bco.registry.remote.Registries;
 import static org.openbase.bco.registry.remote.Registries.getUnitRegistry;
 import org.openbase.bco.stage.jp.JPDisableRegistry;
+import org.openbase.bco.stage.jp.JPFilterPscUnits;
 import org.openbase.bco.stage.registry.ObjectBoxFactory;
 import org.openbase.bco.stage.registry.JavaFX3dObjectRegistrySynchronizer;
 import org.openbase.bco.stage.rsb.RSBConnection;
@@ -63,12 +65,11 @@ public final class Controller extends AbstractEventHandler{
     private JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder> objectBoxRegistrySynchronizer;
     
     private List<String> registryFlags;
+    private boolean usePSCFilter;
     private boolean connectedRegistry = false;
     
     // TODO list:
     // -InterruptedException niemals fangen!!!
-    // -GetPosition und GetGlobalPosition für UnitRemotes implementieren und PullRequest stellen. In AbstractUnitRemote -- PullRequest muss durchgehen.
-    // -Auf Bearbeitung von Ticket #52 warten, bzw code entsprechend anpasssen.
     // -JavaFx stuff wie Line oder Ray in jul.visual.javafx einpflegen
     // - Remove mainLoop and replace by runLater stuff in the components.
     // -Check behavior of RegistrySynchronizer in case an unverified object becomes verified. (Should register but maybe only update called).
@@ -82,7 +83,10 @@ public final class Controller extends AbstractEventHandler{
             }
 
             try {
-                registryFlags = JPService.getProperty(JPRegistryFlags.class).getValue();
+                usePSCFilter = JPService.getProperty(JPFilterPscUnits.class).getValue();
+                LOGGER.info("Filter for psc units set to: "+usePSCFilter);
+                registryFlags = JPService.getProperty(JPPscUnitFilterList.class).getValue();
+                LOGGER.info("Filter for psc units: "+registryFlags);
                 
                 if(!JPService.getProperty(JPDisableRegistry.class).getValue()){
                     initializeRegistryConnection();
@@ -134,9 +138,17 @@ public final class Controller extends AbstractEventHandler{
                 @Override
                 public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
                     try {
-                        return PointingUnitChecker.isApplicableUnit(config, registryFlags);
+                        if(usePSCFilter) {
+                            return PointingUnitChecker.isPointingControlUnit(config, registryFlags);
+                        } else {
+                            return PointingUnitChecker.isDalOrGroupWithLocation(config);
+                        }
                     } catch (InterruptedException ex) {
-                        ExceptionPrinter.printHistory(ex, logger);
+                        Thread.currentThread().interrupt();
+                        ExceptionPrinter.printHistory(ex, logger, LogLevel.ERROR);
+                        return false;
+                    } catch (CouldNotPerformException ex) {
+                        ExceptionPrinter.printHistory(ex, logger, LogLevel.ERROR);
                         return false;
                     }
                 }

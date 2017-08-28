@@ -26,6 +26,7 @@ import org.openbase.bco.stage.visualization.ObjectBox;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.InstantiationException;
 import org.openbase.jul.pattern.Factory;
+import org.slf4j.LoggerFactory;
 import rst.domotic.unit.UnitConfigType;
 
 /**
@@ -33,6 +34,7 @@ import rst.domotic.unit.UnitConfigType;
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class ObjectBoxFactory implements Factory<ObjectBox, UnitConfigType.UnitConfig>  {
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ObjectBoxFactory.class);
     public static ObjectBoxFactory instance;
     
     private ObjectBoxFactory(){}
@@ -49,11 +51,20 @@ public class ObjectBoxFactory implements Factory<ObjectBox, UnitConfigType.UnitC
         return instance;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @param config {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws InstantiationException {@inheritDoc}
+     * @throws InterruptedException {@inheritDoc}
+     */
     @Override
     public ObjectBox newInstance(UnitConfigType.UnitConfig config) throws InstantiationException, InterruptedException {
         try {
             ObjectBox box = new ObjectBox();
             box.applyConfigUpdate(config);
+            LOGGER.debug("Created object for unit "+config.getLabel()+" with id "+config.getId());
             return box;
         } catch (CouldNotPerformException ex) {
             throw new InstantiationException("ObjectBoxInstance", ex);

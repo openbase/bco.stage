@@ -27,8 +27,10 @@ import javafx.application.Application;
 import org.openbase.bco.psc.lib.jp.JPLocalInput;
 import org.openbase.bco.psc.lib.jp.JPPostureScope;
 import org.openbase.bco.psc.lib.jp.JPRayScope;
-import org.openbase.bco.psc.lib.jp.JPRegistryFlags;
+import org.openbase.bco.psc.lib.jp.JPPscUnitFilterList;
+import org.openbase.bco.psc.lib.jp.JPSelectedUnitScope;
 import org.openbase.bco.stage.jp.JPDisableRegistry;
+import org.openbase.bco.stage.jp.JPFilterPscUnits;
 import org.openbase.jps.core.JPService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +51,11 @@ public class Stage extends Application {
         JPService.setApplicationName(APPLICATION_NAME);
         JPService.registerProperty(JPPostureScope.class);
         JPService.registerProperty(JPRayScope.class);
+        JPService.registerProperty(JPSelectedUnitScope.class);
         JPService.registerProperty(JPLocalInput.class);
-        JPService.registerProperty(JPRegistryFlags.class);
+        JPService.registerProperty(JPPscUnitFilterList.class);
         JPService.registerProperty(JPDisableRegistry.class);
+        JPService.registerProperty(JPFilterPscUnits.class);
         List<String> parameters = getParameters().getRaw();
         String[] args = parameters.toArray(new String[parameters.size()]);
         JPService.parseAndExitOnError(args);
@@ -71,5 +75,4 @@ public class Stage extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 }

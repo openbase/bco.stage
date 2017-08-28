@@ -32,7 +32,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.openbase.bco.psc.lib.registry.SynchronizableRegistryImpl;
 import org.openbase.bco.stage.Controller;
 import org.openbase.jps.core.JPService;
 import org.openbase.jul.exception.CouldNotPerformException;
@@ -40,6 +39,7 @@ import org.openbase.jul.exception.InstantiationException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
 import org.openbase.jul.exception.printer.LogLevel;
 import org.openbase.jul.storage.registry.SynchronizableRegistry;
+import org.openbase.jul.storage.registry.SynchronizableRegistryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rst.tracking.PointingRay3DFloatDistributionCollectionType.PointingRay3DFloatDistributionCollection;
@@ -162,7 +162,10 @@ public final class GUIManager {
                 case C:
                     try {
                         controller.initializeRegistryConnection();
-                    } catch (InterruptedException | CouldNotPerformException ex) {
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        Controller.criticalError(ex);
+                    } catch (CouldNotPerformException ex) {
                         Controller.criticalError(ex);
                     }
                     break;
