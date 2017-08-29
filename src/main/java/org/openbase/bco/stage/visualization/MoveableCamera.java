@@ -51,6 +51,8 @@ public class MoveableCamera extends PerspectiveCamera implements EventHandler{
     private static final double ROTATION_SPEED = 2.0;
     private static final Rotate PRE_ROTATE = new Rotate(-90, Rotate.X_AXIS);
     
+    private static MoveableCamera instance;
+    
     private KeyState keyState;
     private double mousePosX;
     private double mousePosY;
@@ -63,7 +65,14 @@ public class MoveableCamera extends PerspectiveCamera implements EventHandler{
     private final Rotate cameraRotateX = new Rotate(CAMERA_INITIAL_X_ANGLE, Rotate.X_AXIS);
     private final Rotate cameraRotateY = new Rotate(CAMERA_INITIAL_Y_ANGLE, Rotate.Y_AXIS);
     
-    public MoveableCamera(){
+    public static MoveableCamera getInstance() {
+        if(instance == null) {
+            instance = new MoveableCamera();
+        }
+        return instance;
+    }
+    
+    private MoveableCamera(){
         super(true);
         this.keyState = new KeyState();
         

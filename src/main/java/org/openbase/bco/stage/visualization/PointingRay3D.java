@@ -21,7 +21,6 @@ package org.openbase.bco.stage.visualization;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import javafx.scene.paint.Material;
 import rst.tracking.PointingRay3DFloatType;
 
@@ -29,23 +28,24 @@ import rst.tracking.PointingRay3DFloatType;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class PointingRay extends Ray {
+public class PointingRay3D extends Ray3D {
+
     private final static double MIN_WIDTH = 0.002;
     private final static double MAX_WIDTH = 0.02;
-    private final static double WIDTH_SPAN = MAX_WIDTH-MIN_WIDTH;
-    
-    public PointingRay() {
-        super();
+    private final static double WIDTH_SPAN = MAX_WIDTH - MIN_WIDTH;
+
+    public PointingRay3D() {
+        super(PhongMaterialManager.getInstance().white);
     }
-    
-    public PointingRay(double rayLength) {
-        super(rayLength);
+
+    public PointingRay3D(double rayLength) {
+        super(PhongMaterialManager.getInstance().white, rayLength);
     }
-    
-    public void update(PointingRay3DFloatType.PointingRay3DFloat ray){
+
+    public void update(PointingRay3DFloatType.PointingRay3DFloat ray) {
         super.update(ray.getRay());
         Material material;
-        switch(ray.getType()){
+        switch (ray.getType()) {
             case HEAD_HAND:
                 material = PhongMaterialManager.getInstance().red;
                 break;
@@ -69,7 +69,6 @@ public class PointingRay extends Ray {
                 break;
         }
         super.setMaterial(material);
-        super.setWidth(ray.getCertainty()*WIDTH_SPAN + MIN_WIDTH);
+        super.setWidth(ray.getCertainty() * WIDTH_SPAN + MIN_WIDTH);
     }
-    
 }

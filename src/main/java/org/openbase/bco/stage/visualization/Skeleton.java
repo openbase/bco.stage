@@ -54,13 +54,13 @@ public class Skeleton extends Group{
         new JointPair(Joints.KneeLeft, Joints.AnkleLeft), new JointPair(Joints.AnkleLeft, Joints.FootLeft)};
     
     private final Sphere[] spheres;
-    private final Line[] lines;
+    private final Line3D[] lines;
     
 
     public Skeleton() {
         Material material = PhongMaterialManager.getInstance().nextSkeletonMaterial();
         spheres = new Sphere[25];
-        lines = new Line[JOINT_PAIRS.length];
+        lines = new Line3D[JOINT_PAIRS.length];
         for(Joints j : Joints.values()){
             if(j == Joints.Head){
                 spheres[j.getValue()] = new Sphere(HEAD_SIZE);
@@ -71,7 +71,7 @@ public class Skeleton extends Group{
             super.getChildren().add(spheres[j.getValue()]);
         }
         for(int i = 0; i < JOINT_PAIRS.length; i++){
-            lines[i] = new Line(Line.LineType.CYLINDER, CONNECTION_DIAMETER, material);
+            lines[i] = new Line3D(Line3D.LineType.CYLINDER, CONNECTION_DIAMETER, material);
             super.getChildren().add(lines[i]);
         }
     }

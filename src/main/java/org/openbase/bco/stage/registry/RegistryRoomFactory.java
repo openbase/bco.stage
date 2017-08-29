@@ -22,7 +22,7 @@ package org.openbase.bco.stage.registry;
  * #L%
  */
 
-import org.openbase.bco.stage.visualization.ObjectBox;
+import org.openbase.bco.stage.visualization.RegistryRoom;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.InstantiationException;
 import org.openbase.jul.pattern.Factory;
@@ -33,20 +33,20 @@ import rst.domotic.unit.UnitConfigType;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class ObjectBoxFactory implements Factory<ObjectBox, UnitConfigType.UnitConfig>  {
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ObjectBoxFactory.class);
-    private static ObjectBoxFactory instance;
+public class RegistryRoomFactory implements Factory<RegistryRoom, UnitConfigType.UnitConfig>  {
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(RegistryRoomFactory.class);
+    private static RegistryRoomFactory instance;
     
-    private ObjectBoxFactory(){}
+    private RegistryRoomFactory(){}
 
     /**
      * Method returns a new singelton instance of the unit factory.
      *
      * @return
      */
-    public synchronized static ObjectBoxFactory getInstance() {
+    public synchronized static RegistryRoomFactory getInstance() {
         if (instance == null) {
-            instance = new ObjectBoxFactory();
+            instance = new RegistryRoomFactory();
         }
         return instance;
     }
@@ -60,15 +60,14 @@ public class ObjectBoxFactory implements Factory<ObjectBox, UnitConfigType.UnitC
      * @throws InterruptedException {@inheritDoc}
      */
     @Override
-    public ObjectBox newInstance(UnitConfigType.UnitConfig config) throws InstantiationException, InterruptedException {
+    public RegistryRoom newInstance(UnitConfigType.UnitConfig config) throws InstantiationException, InterruptedException {
         try {
-            ObjectBox box = new ObjectBox();
-            box.applyConfigUpdate(config);
-            //TODO: Add to log!
-            LOGGER.info("Created object for unit "+config.getLabel()+" with id "+config.getId());
-            return box;
+            RegistryRoom room = new RegistryRoom();
+            room.applyConfigUpdate(config);
+            LOGGER.info("Created room for unit "+config.getLabel()+" with id "+config.getId());
+            return room;
         } catch (CouldNotPerformException ex) {
-            throw new InstantiationException(ObjectBox.class, ex);
+            throw new InstantiationException(RegistryRoom.class, ex);
         }
     }
     

@@ -52,20 +52,25 @@ public class RSBConnection {
     /** Logger instance. */
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(RSBConnection.class);
     /** RSB Listener used to receive posture events. */
-    private Listener skeletonListener;
+    private static Listener skeletonListener;
     /** RSB Listener used to receive pointing ray events. */
-    private Listener rayListener;
+    private static Listener rayListener;
     /** RSB Listener used to receive selected unit events. */
-    private Listener selectedUnitListener;
+    private static Listener selectedUnitListener;
     
     /**
-     * Constructor.
+     * Private Constructor should not be used.
+     */
+    private RSBConnection() {}
+    
+    /**
+     * Initializes the rsb connection.
      * 
      * @param handler is used to handle incoming events.
      * @throws CouldNotPerformException is thrown, if the initialization of the class fails.
      * @throws InterruptedException is thrown in case of an external interruption.
      */
-    public RSBConnection(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException {
+    public static void initialize(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException {
         LOGGER.info("Initializing RSB connection.");
         initializeListeners(handler);
     }
@@ -76,7 +81,7 @@ public class RSBConnection {
      * @throws CouldNotPerformException is thrown, if the deactivation fails.
      * @throws InterruptedException is thrown in case of an external interruption.
      */
-    public void deactivate() throws CouldNotPerformException, InterruptedException{
+    public static void deactivate() throws CouldNotPerformException, InterruptedException{
         LOGGER.info("Deactivating RSB connection.");
         try{
             skeletonListener.deactivate();
@@ -94,7 +99,7 @@ public class RSBConnection {
      * @throws CouldNotPerformException is thrown, if the initialization of the Listeners fails.
      * @throws InterruptedException is thrown in case of an external interruption.
      */
-    private void initializeListeners(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException{
+    private static void initializeListeners(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException{
         LOGGER.debug("Registering converters.");
         final ProtocolBufferConverter<TrackedPostures3DFloat> postureConverter = new ProtocolBufferConverter<>(
                     TrackedPostures3DFloat.getDefaultInstance());
@@ -148,7 +153,7 @@ public class RSBConnection {
      * 
      * @return the local communication configuration.
      */
-    private ParticipantConfig getLocalConfig() {
+    private static ParticipantConfig getLocalConfig() {
         ParticipantConfig localConfig = Factory.getInstance().getDefaultParticipantConfig().copy();
         Properties localProperties = new Properties();
         localProperties.setProperty("transport.socket.host", "localhost");

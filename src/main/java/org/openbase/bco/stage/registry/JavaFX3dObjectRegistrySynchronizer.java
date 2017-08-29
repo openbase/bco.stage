@@ -35,6 +35,10 @@ import org.openbase.jul.storage.registry.SynchronizableRegistry;
 /**
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
+ * @param <KEY>
+ * @param <ENTRY>
+ * @param <CONFIG_M>
+ * @param <CONFIG_MB>
  */
 public abstract class JavaFX3dObjectRegistrySynchronizer<KEY, ENTRY extends JavaFX3dObjectRegistryEntry<KEY, CONFIG_M>, CONFIG_M extends GeneratedMessage, CONFIG_MB extends CONFIG_M.Builder<CONFIG_MB>> 
         extends RegistrySynchronizer<KEY, ENTRY, CONFIG_M, CONFIG_MB> {
@@ -45,42 +49,37 @@ public abstract class JavaFX3dObjectRegistrySynchronizer<KEY, ENTRY extends Java
         this.objectGroup = objectGroup;
     }
 
-//    @Override
-//    public ENTRY update(final CONFIG_M config) throws CouldNotPerformException, InterruptedException {
-//        ENTRY entry = super.update(config);
-//        return entry;
-//    }
-
+    /**
+     * {@inheritDoc}
+     * 
+     * @param config {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws CouldNotPerformException {@inheritDoc}
+     * @throws InterruptedException {@inheritDoc}
+     */
     @Override
     public ENTRY register(final CONFIG_M config) throws CouldNotPerformException, InterruptedException {
         ENTRY entry = super.register(config);
-        Platform.runLater(new Runnable() {
-            @Override public void run() {
-                objectGroup.getChildren().add(entry.getNode());
-            }
+        Platform.runLater(() -> {
+            objectGroup.getChildren().add(entry.getNode());
         });
         return entry;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @param config {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws CouldNotPerformException {@inheritDoc}
+     * @throws InterruptedException {@inheritDoc}
+     */
     @Override
     public ENTRY remove(final CONFIG_M config) throws CouldNotPerformException, InterruptedException {
         ENTRY entry = super.remove(config);
-        Platform.runLater(new Runnable() {
-            @Override public void run() {
-                objectGroup.getChildren().remove(entry.getNode());
-            }
+        Platform.runLater(() -> {
+            objectGroup.getChildren().remove(entry.getNode());
         });
         return entry;
     }
-    
-    
-
-//    @Override
-//    public void deactivate() throws CouldNotPerformException, InterruptedException {
-//        super.deactivate();
-//
-////        for (ObjectBox entry : localRegistry.getEntries()) {
-////            entry.disable();
-////        }
-//    }
 }

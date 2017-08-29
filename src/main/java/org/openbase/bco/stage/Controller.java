@@ -22,11 +22,10 @@ package org.openbase.bco.stage;
  * #L%
  */
 
+import org.openbase.bco.stage.visualization.GUIManager;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import javafx.application.Platform;
-import org.openbase.bco.stage.visualization.GUIManager;
 import javafx.stage.Stage;
 import org.openbase.bco.psc.lib.jp.JPPscUnitFilterList;
 import org.openbase.bco.psc.lib.registry.PointingUnitChecker;
@@ -36,6 +35,7 @@ import org.openbase.bco.stage.jp.JPDisableRegistry;
 import org.openbase.bco.stage.jp.JPFilterPscUnits;
 import org.openbase.bco.stage.registry.ObjectBoxFactory;
 import org.openbase.bco.stage.registry.JavaFX3dObjectRegistrySynchronizer;
+import org.openbase.bco.stage.registry.RegistryRoomFactory;
 import org.openbase.bco.stage.rsb.RSBConnection;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
@@ -45,6 +45,7 @@ import rsb.AbstractEventHandler;
 import rsb.Event;
 import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
 import org.openbase.bco.stage.visualization.ObjectBox;
+import org.openbase.bco.stage.visualization.RegistryRoom;
 import org.openbase.jps.core.JPService;
 import org.openbase.jps.exception.JPNotAvailableException;
 import org.openbase.jul.exception.InstantiationException;
@@ -53,6 +54,7 @@ import org.openbase.jul.exception.VerificationFailedException;
 import org.openbase.jul.exception.printer.LogLevel;
 import rst.domotic.unit.UnitConfigType.UnitConfig;
 import rst.domotic.unit.UnitProbabilityCollectionType.UnitProbabilityCollection;
+import rst.domotic.unit.UnitTemplateType.UnitTemplate.UnitType;
 import rst.tracking.PointingRay3DFloatDistributionCollectionType.PointingRay3DFloatDistributionCollection;
 /**
  *
@@ -60,9 +62,10 @@ import rst.tracking.PointingRay3DFloatDistributionCollectionType.PointingRay3DFl
  */
 public final class Controller extends AbstractEventHandler{
     private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
-    private GUIManager guiManager;
-    private RSBConnection rsbConnection;
+    private static Controller instance;
+    
     private JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder> objectBoxRegistrySynchronizer;
+    private JavaFX3dObjectRegistrySynchronizer<String, RegistryRoom, UnitConfig, UnitConfig.Builder> roomRegistrySynchronizer;
     
     private List<String> registryFlags;
     private boolean usePSCFilter;
@@ -74,10 +77,21 @@ public final class Controller extends AbstractEventHandler{
     // - Remove mainLoop and replace by runLater stuff in the components.
     // -Check behavior of RegistrySynchronizer in case an unverified object becomes verified. (Should register but maybe only update called).
     
-    public Controller(Stage primaryStage){
+    public synchronized static Controller initInstance(Stage primaryStage) {
+        if (instance == null) {
+            instance = new Controller(primaryStage);
+        }
+        return instance;
+    }
+    
+    public synchronized static Controller getInstance() {
+        return instance;
+    }
+    
+    private Controller(Stage primaryStage){
         try{
             try{
-                guiManager = new GUIManager(primaryStage, this);
+                GUIManager.initInstance(primaryStage);
             } catch (InstantiationException ex) {
                 throw new CouldNotPerformException("Could not initialize GUIManager.", ex);
             }
@@ -92,9 +106,9 @@ public final class Controller extends AbstractEventHandler{
                     initializeRegistryConnection();
                 }
 
-                rsbConnection = new RSBConnection(this);
+                RSBConnection.initialize(this);
             } catch (CouldNotPerformException | JPNotAvailableException | InterruptedException ex) {
-                guiManager.close();
+                GUIManager.getInstance().close();
                 objectBoxRegistrySynchronizer.deactivate();
                 throw ex;
             }
@@ -114,16 +128,16 @@ public final class Controller extends AbstractEventHandler{
         if(event.getData() instanceof TrackedPostures3DFloat){
             LOGGER.trace("New TrackedPostures3DFloat event received.");
             TrackedPostures3DFloat postures = (TrackedPostures3DFloat) event.getData();
-            guiManager.updateSkeletonData(postures);
+            GUIManager.getInstance().updateSkeletonData(postures);
         } else if(event.getData() instanceof PointingRay3DFloatDistributionCollection){
             LOGGER.trace("New PointingRay3DFloatCollection event received.");
             PointingRay3DFloatDistributionCollection pointingRays = (PointingRay3DFloatDistributionCollection) event.getData();
-            guiManager.updateRayData(pointingRays);
+            GUIManager.getInstance().updateRayData(pointingRays);
         } else if(event.getData() instanceof UnitProbabilityCollection) {
             LOGGER.trace("New UnitProbabilityCollection event received.");
             UnitProbabilityCollection selectedUnits = (UnitProbabilityCollection) event.getData();
             //TODO process unit/units correctly
-            guiManager.highlightObject(selectedUnits.getElement(0).getId());
+            GUIManager.getInstance().highlightObject(selectedUnits.getElement(0).getId());
         }
     }
     
@@ -133,8 +147,8 @@ public final class Controller extends AbstractEventHandler{
             LOGGER.info("Initializing Registry synchronization.");
             Registries.getUnitRegistry().waitForData(3, TimeUnit.SECONDS);
             
-            this.objectBoxRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder>(guiManager.getObjectGroup(), 
-                    guiManager.getObjectBoxRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), ObjectBoxFactory.getInstance()) {
+            this.objectBoxRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder>(GUIManager.getInstance().getObjectGroup(), 
+                    GUIManager.getInstance().getObjectBoxRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), ObjectBoxFactory.getInstance()) {
                 @Override
                 public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
                     try {
@@ -154,8 +168,17 @@ public final class Controller extends AbstractEventHandler{
                 }
             };
             
+            this.roomRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<String, RegistryRoom, UnitConfig, UnitConfig.Builder>(GUIManager.getInstance().getRoomGroup(), 
+                    GUIManager.getInstance().getRoomRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), RegistryRoomFactory.getInstance()) {
+                @Override
+                public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
+                    return config.getType() == UnitType.LOCATION;
+                }
+            };
+            
             Registries.waitForData(); 
             objectBoxRegistrySynchronizer.activate();
+            roomRegistrySynchronizer.activate();
             connectedRegistry = true;
         } catch (NotAvailableException ex) {
             //TODO: Add here what to press.

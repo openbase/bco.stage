@@ -41,9 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Stage extends Application {
     public static final String APPLICATION_NAME = "BCO Stage";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(Stage.class);
-    private Controller controller;
 
     @Override
     public void start(javafx.stage.Stage primaryStage) {
@@ -61,7 +59,7 @@ public class Stage extends Application {
         JPService.parseAndExitOnError(args);
 //        JPService.printHelp();
         
-        controller = new Controller(primaryStage);
+        Controller.initInstance(primaryStage);
     }
 
     /**

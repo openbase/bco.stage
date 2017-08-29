@@ -42,7 +42,7 @@ import rst.geometry.AxisAlignedBoundingBox3DFloatType.AxisAlignedBoundingBox3DFl
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig>{
+public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig> {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ObjectBox.class);
     
     private static final Material DEFAULT_MATERIAL = PhongMaterialManager.getInstance().white;
