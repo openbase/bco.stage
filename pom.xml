@@ -3,7 +3,7 @@
 
     <groupId>org.openbase.bco</groupId>
     <artifactId>stage</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1-SNAPSHOT</version>
 
     <name>BCO Stage</name>
     <inceptionYear>2017</inceptionYear>
@@ -45,7 +45,7 @@
         <connection>scm:git:https://github.com/openbase/bco.stage.git</connection>
         <developerConnection>scm:git:https://github.com/openbase/bco.stage.git</developerConnection>
         <url>https://github.com/openbase/bco.stage.git</url>
-      <tag>v1.4.0</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <build>
