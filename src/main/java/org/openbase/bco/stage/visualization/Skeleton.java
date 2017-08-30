@@ -28,6 +28,7 @@ import javafx.scene.paint.Material;
 import javafx.scene.shape.Sphere;
 import org.openbase.bco.psc.lib.pointing.JointPair;
 import org.openbase.bco.psc.lib.pointing.Joints;
+import org.openbase.jul.visual.javafx.geometry.Line3D;
 import rst.geometry.TranslationType;
 import rst.tracking.TrackedPosture3DFloatType;
 

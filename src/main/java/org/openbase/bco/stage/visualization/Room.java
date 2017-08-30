@@ -27,6 +27,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Material;
+import org.openbase.jul.visual.javafx.geometry.Line3D;
 import rst.spatial.FloorCeilingEdgeIndicesType.FloorCeilingEdgeIndices;
 
 /**

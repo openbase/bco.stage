@@ -41,6 +41,7 @@ import org.openbase.jul.exception.printer.ExceptionPrinter;
 import org.openbase.jul.exception.printer.LogLevel;
 import org.openbase.jul.storage.registry.SynchronizableRegistry;
 import org.openbase.jul.storage.registry.SynchronizableRegistryImpl;
+import org.openbase.jul.visual.javafx.geometry.Line3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rst.domotic.unit.UnitProbabilityCollectionType.UnitProbabilityCollection;
