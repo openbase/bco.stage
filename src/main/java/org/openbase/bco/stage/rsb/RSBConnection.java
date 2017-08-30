@@ -21,7 +21,6 @@ package org.openbase.bco.stage.rsb;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import org.openbase.bco.psc.lib.jp.JPLocalInput;
 import org.openbase.bco.psc.lib.jp.JPPostureScope;
 import org.openbase.bco.psc.lib.jp.JPRayScope;
@@ -49,74 +48,88 @@ import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class RSBConnection {
-    /** Logger instance. */
+
+    /**
+     * Logger instance.
+     */
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(RSBConnection.class);
-    /** RSB Listener used to receive posture events. */
+    /**
+     * RSB Listener used to receive posture events.
+     */
     private static Listener skeletonListener;
-    /** RSB Listener used to receive pointing ray events. */
+    /**
+     * RSB Listener used to receive pointing ray events.
+     */
     private static Listener rayListener;
-    /** RSB Listener used to receive selected unit events. */
+    /**
+     * RSB Listener used to receive selected unit events.
+     */
     private static Listener selectedUnitListener;
-    
+
     /**
      * Private Constructor should not be used.
      */
-    private RSBConnection() {}
-    
+    private RSBConnection() {
+    }
+
     /**
      * Initializes the rsb connection.
-     * 
+     *
      * @param handler is used to handle incoming events.
-     * @throws CouldNotPerformException is thrown, if the initialization of the class fails.
-     * @throws InterruptedException is thrown in case of an external interruption.
+     * @throws CouldNotPerformException is thrown, if the initialization of the
+     * class fails.
+     * @throws InterruptedException is thrown in case of an external
+     * interruption.
      */
     public static void initialize(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException {
         LOGGER.info("Initializing RSB connection.");
         initializeListeners(handler);
     }
-    
+
     /**
      * Deactivates the RSB connection.
-     * 
+     *
      * @throws CouldNotPerformException is thrown, if the deactivation fails.
-     * @throws InterruptedException is thrown in case of an external interruption.
+     * @throws InterruptedException is thrown in case of an external
+     * interruption.
      */
-    public static void deactivate() throws CouldNotPerformException, InterruptedException{
+    public static void deactivate() throws CouldNotPerformException, InterruptedException {
         LOGGER.info("Deactivating RSB connection.");
-        try{
+        try {
             skeletonListener.deactivate();
             rayListener.deactivate();
             selectedUnitListener.deactivate();
         } catch (RSBException ex) {
             throw new CouldNotPerformException("Could not deactivate informer and listener.", ex);
-        } 
+        }
     }
-    
+
     /**
      * Initializes the RSB Listeners.
-     * 
+     *
      * @param handler is used to handle incoming events.
-     * @throws CouldNotPerformException is thrown, if the initialization of the Listeners fails.
-     * @throws InterruptedException is thrown in case of an external interruption.
+     * @throws CouldNotPerformException is thrown, if the initialization of the
+     * Listeners fails.
+     * @throws InterruptedException is thrown in case of an external
+     * interruption.
      */
-    private static void initializeListeners(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException{
+    private static void initializeListeners(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException {
         LOGGER.debug("Registering converters.");
         final ProtocolBufferConverter<TrackedPostures3DFloat> postureConverter = new ProtocolBufferConverter<>(
-                    TrackedPostures3DFloat.getDefaultInstance());
+                TrackedPostures3DFloat.getDefaultInstance());
         DefaultConverterRepository.getDefaultConverterRepository()
-            .addConverter(postureConverter);
-        
+                .addConverter(postureConverter);
+
         final ProtocolBufferConverter<PointingRay3DFloatDistributionCollection> rayConverter = new ProtocolBufferConverter<>(
-                    PointingRay3DFloatDistributionCollection.getDefaultInstance());
+                PointingRay3DFloatDistributionCollection.getDefaultInstance());
         DefaultConverterRepository.getDefaultConverterRepository()
-            .addConverter(rayConverter);
-        
+                .addConverter(rayConverter);
+
         final ProtocolBufferConverter<UnitProbabilityCollection> selectedUnitConverter = new ProtocolBufferConverter<>(
-                    UnitProbabilityCollection.getDefaultInstance());
+                UnitProbabilityCollection.getDefaultInstance());
         DefaultConverterRepository.getDefaultConverterRepository()
-            .addConverter(selectedUnitConverter);
-        
-        
+                .addConverter(selectedUnitConverter);
+
         try {
             Scope postureScope = JPService.getProperty(JPPostureScope.class).getValue();
             Scope rayScope = JPService.getProperty(JPRayScope.class).getValue();
@@ -124,7 +137,7 @@ public class RSBConnection {
             LOGGER.info("Initializing RSB Posture Listener on scope: " + postureScope);
             LOGGER.info("Initializing RSB Ray Listener on scope: " + rayScope);
             LOGGER.info("Initializing RSB Selected Unit Listener on scope: " + selectedUnitScope);
-            if(JPService.getProperty(JPLocalInput.class).getValue()){
+            if (JPService.getProperty(JPLocalInput.class).getValue()) {
                 LOGGER.warn("RSB input set to socket and localhost.");
                 skeletonListener = Factory.getInstance().createListener(postureScope, getLocalConfig());
                 rayListener = Factory.getInstance().createListener(rayScope, getLocalConfig());
@@ -137,12 +150,12 @@ public class RSBConnection {
             skeletonListener.activate();
             rayListener.activate();
             selectedUnitListener.activate();
-            
+
             // Add an EventHandler.
             skeletonListener.addHandler(handler, true);
             rayListener.addHandler(handler, true);
             selectedUnitListener.addHandler(handler, true);
-            
+
         } catch (JPNotAvailableException | RSBException ex) {
             throw new CouldNotPerformException("RSB listener could not be initialized.", ex);
         }
@@ -150,7 +163,7 @@ public class RSBConnection {
 
     /**
      * Creates an RSB configuration for connecting via socket and localhost.
-     * 
+     *
      * @return the local communication configuration.
      */
     private static ParticipantConfig getLocalConfig() {

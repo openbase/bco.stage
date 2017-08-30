@@ -21,7 +21,6 @@ package org.openbase.bco.stage.registry;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import javafx.scene.Node;
 import org.openbase.jul.iface.Configurable;
 
@@ -32,6 +31,7 @@ import org.openbase.jul.iface.Configurable;
  * @param <CONFIG_M>
  */
 public interface JavaFX3dObjectRegistryEntry<KEY, CONFIG_M> extends Configurable<KEY, CONFIG_M> {
+
     public Node getNode();
-    
+
 }

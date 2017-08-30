@@ -10,12 +10,12 @@ package org.openbase.bco.stage.visualization;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -27,7 +27,8 @@ import rst.geometry.Ray3DFloatType.Ray3DFloat;
 import rst.math.Vec3DFloatType.Vec3DFloat;
 
 /**
- * This class represents a ray in a 3d space represented by a cylinder. Default width is 2cm.
+ * This class represents a ray in a 3d space represented by a cylinder. Default
+ * width is 2cm.
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
@@ -58,7 +59,7 @@ public class Ray3D extends Line3D {
 
     /**
      * Constructor using default ray length (10 meters).
-     * 
+     *
      * @param material The ray material.
      */
     public Ray3D(final Material material) {

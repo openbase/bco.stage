@@ -21,29 +21,34 @@ package org.openbase.bco.stage.jp;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 /**
- * JavaProperty used to signal that the program should not try to connect to the registry.
+ * JavaProperty used to signal that the program should not try to connect to the
+ * registry.
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class JPDisableRegistry extends org.openbase.jps.preset.AbstractJPBoolean {
-    /** The identifiers that can be used in front of the command line argument. */
+
+    /**
+     * The identifiers that can be used in front of the command line argument.
+     */
     public final static String[] COMMAND_IDENTIFIERS = {"--dr", "--disable-registry"};
 
-    /** Constructor. */
+    /**
+     * Constructor.
+     */
     public JPDisableRegistry() {
         super(COMMAND_IDENTIFIERS);
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @return {@inheritDoc}
      */
     @Override
     public String getDescription() {
         return "If true, the program will not connect to the registry and thus not load any unit objects.";
     }
-    
+
 }

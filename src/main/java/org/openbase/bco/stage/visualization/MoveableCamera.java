@@ -10,18 +10,17 @@ package org.openbase.bco.stage.visualization;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import javafx.animation.AnimationTimer;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -36,7 +35,8 @@ import javafx.scene.transform.Translate;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class MoveableCamera extends PerspectiveCamera implements EventHandler{
+public class MoveableCamera extends PerspectiveCamera implements EventHandler {
+
     //TODO initial position and rotation via JPService.
     private static final double CAMERA_INITIAL_X = -7.0;
     private static final double CAMERA_INITIAL_Y = 8.0;
@@ -50,9 +50,9 @@ public class MoveableCamera extends PerspectiveCamera implements EventHandler{
     private static final double MOUSE_SPEED = 0.1;
     private static final double ROTATION_SPEED = 2.0;
     private static final Rotate PRE_ROTATE = new Rotate(-90, Rotate.X_AXIS);
-    
+
     private static MoveableCamera instance;
-    
+
     private KeyState keyState;
     private double mousePosX;
     private double mousePosY;
@@ -60,26 +60,26 @@ public class MoveableCamera extends PerspectiveCamera implements EventHandler{
     private double mouseOldY;
     private double mouseDeltaX;
     private double mouseDeltaY;
-    
+
     private final Translate cameraTranslate = new Translate(CAMERA_INITIAL_X, CAMERA_INITIAL_Y, CAMERA_INITIAL_Z);
     private final Rotate cameraRotateX = new Rotate(CAMERA_INITIAL_X_ANGLE, Rotate.X_AXIS);
     private final Rotate cameraRotateY = new Rotate(CAMERA_INITIAL_Y_ANGLE, Rotate.Y_AXIS);
-    
+
     public static MoveableCamera getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new MoveableCamera();
         }
         return instance;
     }
-    
-    private MoveableCamera(){
+
+    private MoveableCamera() {
         super(true);
         this.keyState = new KeyState();
-        
+
         this.setNearClip(CAMERA_NEAR_CLIP);
         this.setFarClip(CAMERA_FAR_CLIP);
         this.getTransforms().addAll(cameraTranslate, PRE_ROTATE, cameraRotateY, cameraRotateX);
-        
+
         AnimationTimer movementLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -87,29 +87,41 @@ public class MoveableCamera extends PerspectiveCamera implements EventHandler{
                 Point3D forward = rotation.transform(new Point3D(0, 1, 0));
                 Point3D right = rotation.transform(new Point3D(1, 0, 0));
                 double sMovement = 0.0;
-                if(keyState.isaPressed()) sMovement -= 1.0;
-                if(keyState.isdPressed()) sMovement += 1.0;
+                if (keyState.isaPressed()) {
+                    sMovement -= 1.0;
+                }
+                if (keyState.isdPressed()) {
+                    sMovement += 1.0;
+                }
                 double fMovement = 0.0;
-                if(keyState.issPressed()) fMovement -= 1.0;
-                if(keyState.iswPressed()) fMovement += 1.0;
+                if (keyState.issPressed()) {
+                    fMovement -= 1.0;
+                }
+                if (keyState.iswPressed()) {
+                    fMovement += 1.0;
+                }
                 Point3D movement = forward.multiply(fMovement).add(right.multiply(sMovement)).multiply(MOVEMENT_FACTOR_HOR);
                 cameraTranslate.setY(cameraTranslate.getY() + movement.getY());
                 cameraTranslate.setX(cameraTranslate.getX() + movement.getX());
                 double zMovement = 0.0;
-                if(keyState.isSpacePressed()) zMovement += 1.0;
-                if(keyState.isCtrlPressed()) zMovement -= 1.0;
-                cameraTranslate.setZ(cameraTranslate.getZ() + zMovement*MOVEMENT_FACTOR_VERT);
+                if (keyState.isSpacePressed()) {
+                    zMovement += 1.0;
+                }
+                if (keyState.isCtrlPressed()) {
+                    zMovement -= 1.0;
+                }
+                cameraTranslate.setZ(cameraTranslate.getZ() + zMovement * MOVEMENT_FACTOR_VERT);
             }
         };
         movementLoop.start();
     }
-    
+
     @Override
     public void handle(Event event) {
-        if(event instanceof KeyEvent){
+        if (event instanceof KeyEvent) {
             KeyEvent keyEvent = (KeyEvent) event;
-            if(keyEvent.getEventType() == KeyEvent.KEY_PRESSED || keyEvent.getEventType() == KeyEvent.KEY_RELEASED){
-                switch(keyEvent.getCode()){
+            if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED || keyEvent.getEventType() == KeyEvent.KEY_RELEASED) {
+                switch (keyEvent.getCode()) {
                     case Z:
                         //Reset camera position
                         cameraTranslate.setX(CAMERA_INITIAL_X);
@@ -122,53 +134,54 @@ public class MoveableCamera extends PerspectiveCamera implements EventHandler{
                         break;
                 }
             }
-            
-        } else if(event instanceof MouseEvent){
+
+        } else if (event instanceof MouseEvent) {
             MouseEvent me = (MouseEvent) event;
-            if(me.getEventType() == MouseEvent.MOUSE_PRESSED){
+            if (me.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 mousePosX = me.getSceneX();
                 mousePosY = me.getSceneY();
                 mouseOldX = me.getSceneX();
                 mouseOldY = me.getSceneY();
-            } else if(me.getEventType() == MouseEvent.MOUSE_DRAGGED){
+            } else if (me.getEventType() == MouseEvent.MOUSE_DRAGGED) {
                 mouseOldX = mousePosX;
                 mouseOldY = mousePosY;
                 mousePosX = me.getSceneX();
                 mousePosY = me.getSceneY();
-                mouseDeltaX = (mousePosX - mouseOldX); 
-                mouseDeltaY = (mousePosY - mouseOldY); 
-                
+                mouseDeltaX = (mousePosX - mouseOldX);
+                mouseDeltaY = (mousePosY - mouseOldY);
+
                 if (me.isPrimaryButtonDown()) {
-                    setRotations(getRotateXAngle() - mouseDeltaY*MOUSE_SPEED*ROTATION_SPEED, 
-                            getRotateYAngle() + mouseDeltaX*MOUSE_SPEED*ROTATION_SPEED);
+                    setRotations(getRotateXAngle() - mouseDeltaY * MOUSE_SPEED * ROTATION_SPEED,
+                            getRotateYAngle() + mouseDeltaX * MOUSE_SPEED * ROTATION_SPEED);
                 }
             }
         }
     }
-    
-    private synchronized void setRotations(double rotateXAngle, double rotateYAngle){
+
+    private synchronized void setRotations(double rotateXAngle, double rotateYAngle) {
         cameraRotateX.setAngle(rotateXAngle);
         cameraRotateY.setAngle(rotateYAngle);
     }
-    
-    private synchronized double getRotateXAngle(){
+
+    private synchronized double getRotateXAngle() {
         return cameraRotateX.getAngle();
     }
-    
-    private synchronized double getRotateYAngle(){
+
+    private synchronized double getRotateYAngle() {
         return cameraRotateY.getAngle();
     }
-    
-    public class KeyState{
+
+    public class KeyState {
+
         private boolean wPressed = false;
         private boolean aPressed = false;
         private boolean sPressed = false;
         private boolean dPressed = false;
         private boolean spacePressed = false;
         private boolean ctrlPressed = false;
-        
-        public synchronized void keyEvent(KeyEvent keyEvent){
-            if(keyEvent.getEventType() == KeyEvent.KEY_PRESSED || keyEvent.getEventType() == KeyEvent.KEY_RELEASED){
+
+        public synchronized void keyEvent(KeyEvent keyEvent) {
+            if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED || keyEvent.getEventType() == KeyEvent.KEY_RELEASED) {
                 boolean val = keyEvent.getEventType() == KeyEvent.KEY_PRESSED;
                 switch (keyEvent.getCode()) {
                     case W:
@@ -217,5 +230,5 @@ public class MoveableCamera extends PerspectiveCamera implements EventHandler{
             return ctrlPressed;
         }
     }
-    
+
 }
