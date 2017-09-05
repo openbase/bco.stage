@@ -21,7 +21,6 @@ package org.openbase.bco.stage.registry;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.google.protobuf.GeneratedMessage;
 import javafx.application.Platform;
 import javafx.scene.Group;
@@ -40,10 +39,11 @@ import org.openbase.jul.storage.registry.SynchronizableRegistry;
  * @param <CONFIG_M>
  * @param <CONFIG_MB>
  */
-public abstract class JavaFX3dObjectRegistrySynchronizer<KEY, ENTRY extends JavaFX3dObjectRegistryEntry<KEY, CONFIG_M>, CONFIG_M extends GeneratedMessage, CONFIG_MB extends CONFIG_M.Builder<CONFIG_MB>> 
+public abstract class JavaFX3dObjectRegistrySynchronizer<KEY, ENTRY extends JavaFX3dObjectRegistryEntry<KEY, CONFIG_M>, CONFIG_M extends GeneratedMessage, CONFIG_MB extends CONFIG_M.Builder<CONFIG_MB>>
         extends RegistrySynchronizer<KEY, ENTRY, CONFIG_M, CONFIG_MB> {
+
     Group objectGroup;
-    
+
     public JavaFX3dObjectRegistrySynchronizer(Group objectGroup, SynchronizableRegistry<KEY, ENTRY> registry, RemoteRegistry<KEY, CONFIG_M, CONFIG_MB> remoteRegistry, Factory<ENTRY, CONFIG_M> factory) throws InstantiationException {
         super(registry, remoteRegistry, factory);
         this.objectGroup = objectGroup;
@@ -51,7 +51,7 @@ public abstract class JavaFX3dObjectRegistrySynchronizer<KEY, ENTRY extends Java
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @param config {@inheritDoc}
      * @return {@inheritDoc}
      * @throws CouldNotPerformException {@inheritDoc}
@@ -68,7 +68,7 @@ public abstract class JavaFX3dObjectRegistrySynchronizer<KEY, ENTRY extends Java
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @param config {@inheritDoc}
      * @return {@inheritDoc}
      * @throws CouldNotPerformException {@inheritDoc}

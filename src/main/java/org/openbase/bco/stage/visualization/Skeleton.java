@@ -21,7 +21,6 @@ package org.openbase.bco.stage.visualization;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.util.List;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -29,6 +28,7 @@ import javafx.scene.paint.Material;
 import javafx.scene.shape.Sphere;
 import org.openbase.bco.psc.lib.pointing.JointPair;
 import org.openbase.bco.psc.lib.pointing.Joints;
+import org.openbase.jul.visual.javafx.geometry.Line3D;
 import rst.geometry.TranslationType;
 import rst.tracking.TrackedPosture3DFloatType;
 
@@ -36,33 +36,33 @@ import rst.tracking.TrackedPosture3DFloatType;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class Skeleton extends Group{
+public class Skeleton extends Group {
+
     private final static double JOINT_SIZE = 0.04;
     private final static double HEAD_SIZE = 0.10;
     private final static double CONNECTION_DIAMETER = 0.03;
-    private final static JointPair[] JOINT_PAIRS = {new JointPair(Joints.Head, Joints.Neck), new JointPair(Joints.Neck, Joints.SpineShoulder), 
-        new JointPair(Joints.SpineShoulder, Joints.SpineMid), new JointPair(Joints.SpineMid, Joints.SpineBase), 
-        new JointPair(Joints.SpineShoulder, Joints.ShoulderRight), new JointPair(Joints.ShoulderRight, Joints.ElbowRight), 
-        new JointPair(Joints.ElbowRight, Joints.WristRight), new JointPair(Joints.WristRight, Joints.HandRight), 
-        new JointPair(Joints.HandRight, Joints.HandTipRight), new JointPair(Joints.HandRight, Joints.ThumbRight), 
-        new JointPair(Joints.SpineShoulder, Joints.ShoulderLeft), new JointPair(Joints.ShoulderLeft, Joints.ElbowLeft), 
-        new JointPair(Joints.ElbowLeft, Joints.WristLeft), new JointPair(Joints.WristLeft, Joints.HandLeft), 
-        new JointPair(Joints.HandLeft, Joints.HandTipLeft), new JointPair(Joints.HandLeft, Joints.ThumbLeft), 
-        new JointPair(Joints.SpineBase, Joints.HipRight), new JointPair(Joints.HipRight, Joints.KneeRight), 
-        new JointPair(Joints.KneeRight, Joints.AnkleRight), new JointPair(Joints.AnkleRight, Joints.FootRight), 
-        new JointPair(Joints.SpineBase, Joints.HipLeft), new JointPair(Joints.HipLeft, Joints.KneeLeft), 
+    private final static JointPair[] JOINT_PAIRS = {new JointPair(Joints.Head, Joints.Neck), new JointPair(Joints.Neck, Joints.SpineShoulder),
+        new JointPair(Joints.SpineShoulder, Joints.SpineMid), new JointPair(Joints.SpineMid, Joints.SpineBase),
+        new JointPair(Joints.SpineShoulder, Joints.ShoulderRight), new JointPair(Joints.ShoulderRight, Joints.ElbowRight),
+        new JointPair(Joints.ElbowRight, Joints.WristRight), new JointPair(Joints.WristRight, Joints.HandRight),
+        new JointPair(Joints.HandRight, Joints.HandTipRight), new JointPair(Joints.HandRight, Joints.ThumbRight),
+        new JointPair(Joints.SpineShoulder, Joints.ShoulderLeft), new JointPair(Joints.ShoulderLeft, Joints.ElbowLeft),
+        new JointPair(Joints.ElbowLeft, Joints.WristLeft), new JointPair(Joints.WristLeft, Joints.HandLeft),
+        new JointPair(Joints.HandLeft, Joints.HandTipLeft), new JointPair(Joints.HandLeft, Joints.ThumbLeft),
+        new JointPair(Joints.SpineBase, Joints.HipRight), new JointPair(Joints.HipRight, Joints.KneeRight),
+        new JointPair(Joints.KneeRight, Joints.AnkleRight), new JointPair(Joints.AnkleRight, Joints.FootRight),
+        new JointPair(Joints.SpineBase, Joints.HipLeft), new JointPair(Joints.HipLeft, Joints.KneeLeft),
         new JointPair(Joints.KneeLeft, Joints.AnkleLeft), new JointPair(Joints.AnkleLeft, Joints.FootLeft)};
-    
+
     private final Sphere[] spheres;
     private final Line3D[] lines;
-    
 
     public Skeleton() {
         Material material = PhongMaterialManager.getInstance().nextSkeletonMaterial();
         spheres = new Sphere[25];
         lines = new Line3D[JOINT_PAIRS.length];
-        for(Joints j : Joints.values()){
-            if(j == Joints.Head){
+        for (Joints j : Joints.values()) {
+            if (j == Joints.Head) {
                 spheres[j.getValue()] = new Sphere(HEAD_SIZE);
             } else {
                 spheres[j.getValue()] = new Sphere(JOINT_SIZE);
@@ -70,23 +70,23 @@ public class Skeleton extends Group{
             spheres[j.getValue()].setMaterial(material);
             super.getChildren().add(spheres[j.getValue()]);
         }
-        for(int i = 0; i < JOINT_PAIRS.length; i++){
+        for (int i = 0; i < JOINT_PAIRS.length; i++) {
             lines[i] = new Line3D(Line3D.LineType.CYLINDER, CONNECTION_DIAMETER, material);
             super.getChildren().add(lines[i]);
         }
     }
-    
-    public void updatePositions(TrackedPosture3DFloatType.TrackedPosture3DFloat posture){
-        if(posture.getConfidenceCount() > 0){
+
+    public void updatePositions(TrackedPosture3DFloatType.TrackedPosture3DFloat posture) {
+        if (posture.getConfidenceCount() > 0) {
             List<TranslationType.Translation> positionList = posture.getPosture().getPositionList();
-            for(int i = 0; i < positionList.size(); i++){
+            for (int i = 0; i < positionList.size(); i++) {
                 // Updating the joint positions
                 Point3D position = translationToPoint(positionList.get(i));
                 spheres[i].setTranslateX(position.getX());
                 spheres[i].setTranslateY(position.getY());
                 spheres[i].setTranslateZ(position.getZ());
             }
-            for(int i = 0; i < lines.length; i++){
+            for (int i = 0; i < lines.length; i++) {
                 // Updating the joint connections.
                 Point3D joint1 = translationToPoint(positionList.get(JOINT_PAIRS[i].getJoint1().getValue()));
                 Point3D joint2 = translationToPoint(positionList.get(JOINT_PAIRS[i].getJoint2().getValue()));
@@ -94,8 +94,8 @@ public class Skeleton extends Group{
             }
         }
     }
-    
-    private Point3D translationToPoint(TranslationType.Translation translation){
+
+    private Point3D translationToPoint(TranslationType.Translation translation) {
         return new Point3D(translation.getX(), translation.getY(), translation.getZ());
     }
 }

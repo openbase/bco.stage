@@ -21,7 +21,6 @@ package org.openbase.bco.stage.visualization;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.util.ArrayList;
 import java.util.List;
 import javafx.geometry.Point3D;
@@ -32,19 +31,20 @@ import rst.spatial.FloorCeilingEdgeIndicesType.FloorCeilingEdgeIndices;
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class CSRARoom extends Room {
+
     private static final double ROOM_HEIGHT = 3.20;
     private static final Point3D TO_CEIL = new Point3D(0, 0, ROOM_HEIGHT);
     private final List<Point3D> groundPoints = new ArrayList<>();
     private final List<Point3D> ceilingPoints = new ArrayList<>();
     private final List<FloorCeilingEdgeIndices> edgeIndices = new ArrayList<>();
-    
-    public CSRARoom(){
+
+    public CSRARoom() {
         fillGroundPoints();
         fillCeilingAndEdges();
         super.setConnections(groundPoints, ceilingPoints, edgeIndices);
     }
-    
-    private void fillGroundPoints(){
+
+    private void fillGroundPoints() {
         groundPoints.add(new Point3D(0, 0, 0));
         groundPoints.add(new Point3D(0, 8.8, 0));
         groundPoints.add(new Point3D(3.75, 8.8, 0));
@@ -55,9 +55,9 @@ public class CSRARoom extends Room {
         groundPoints.add(new Point3D(2.42, 4.45, 0));
         groundPoints.add(new Point3D(2.42, 0, 0));
     }
-    
-    private void fillCeilingAndEdges(){
-        for(int i = 0; i < groundPoints.size(); i++) {
+
+    private void fillCeilingAndEdges() {
+        for (int i = 0; i < groundPoints.size(); i++) {
             edgeIndices.add(FloorCeilingEdgeIndices.newBuilder().setFloorIndex(i).setCeilingIndex(i).build());
             ceilingPoints.add(groundPoints.get(i).add(TO_CEIL));
         }

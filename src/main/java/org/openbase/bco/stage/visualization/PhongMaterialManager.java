@@ -21,7 +21,6 @@ package org.openbase.bco.stage.visualization;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -31,28 +30,30 @@ import javafx.scene.paint.PhongMaterial;
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class PhongMaterialManager {
+
+    private static PhongMaterialManager instance;
+
     private final ArrayList<PhongMaterial> skeletonMaterials = new ArrayList<>();
     private int index = 0;
-    public PhongMaterial red;
-    public PhongMaterial blue;
-    public PhongMaterial green;
-    public PhongMaterial margenta;
-    public PhongMaterial cyan;
-    public PhongMaterial orange;
-    public PhongMaterial grey;
-    public PhongMaterial white;
-    
-    public static PhongMaterialManager instance;
+    public final PhongMaterial red;
+    public final PhongMaterial blue;
+    public final PhongMaterial green;
+    public final PhongMaterial margenta;
+    public final PhongMaterial cyan;
+    public final PhongMaterial yellow;
+    public final PhongMaterial orange;
+    public final PhongMaterial grey;
+    public final PhongMaterial white;
 
     private PhongMaterialManager() {
         red = new PhongMaterial(Color.DARKRED);
         red.setSpecularColor(Color.RED);
         skeletonMaterials.add(red);
-        
+
         blue = new PhongMaterial(Color.DARKBLUE);
         blue.setSpecularColor(Color.BLUE);
         skeletonMaterials.add(blue);
-        
+
         green = new PhongMaterial(Color.DARKGREEN);
         green.setSpecularColor(Color.GREEN);
         skeletonMaterials.add(green);
@@ -60,18 +61,22 @@ public class PhongMaterialManager {
         margenta = new PhongMaterial(Color.DARKMAGENTA);
         margenta.setSpecularColor(Color.MAGENTA);
         skeletonMaterials.add(margenta);
-        
+
         cyan = new PhongMaterial(Color.DARKCYAN);
         cyan.setSpecularColor(Color.CYAN);
         skeletonMaterials.add(cyan);
-        
+
+        yellow = new PhongMaterial(Color.YELLOW);
+        yellow.setSpecularColor(Color.LIGHTYELLOW);
+        skeletonMaterials.add(yellow);
+
         orange = new PhongMaterial(Color.DARKORANGE);
         orange.setSpecularColor(Color.ORANGE);
         skeletonMaterials.add(orange);
 
         grey = new PhongMaterial(Color.DARKGREY);
         grey.setSpecularColor(Color.GREY);
-        
+
         white = new PhongMaterial(Color.WHITESMOKE);
         white.setSpecularColor(Color.WHITE);
     }
@@ -87,11 +92,13 @@ public class PhongMaterialManager {
         }
         return instance;
     }
-    
-    public PhongMaterial nextSkeletonMaterial(){
+
+    public PhongMaterial nextSkeletonMaterial() {
         PhongMaterial material = skeletonMaterials.get(index++);
-        if(index >= skeletonMaterials.size()) index = 0;
+        if (index >= skeletonMaterials.size()) {
+            index = 0;
+        }
         return material;
     }
-    
+
 }

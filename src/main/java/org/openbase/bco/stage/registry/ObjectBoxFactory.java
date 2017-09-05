@@ -21,7 +21,6 @@ package org.openbase.bco.stage.registry;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import org.openbase.bco.stage.visualization.ObjectBox;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.InstantiationException;
@@ -33,11 +32,13 @@ import rst.domotic.unit.UnitConfigType;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class ObjectBoxFactory implements Factory<ObjectBox, UnitConfigType.UnitConfig>  {
+public class ObjectBoxFactory implements Factory<ObjectBox, UnitConfigType.UnitConfig> {
+
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ObjectBoxFactory.class);
     private static ObjectBoxFactory instance;
-    
-    private ObjectBoxFactory(){}
+
+    private ObjectBoxFactory() {
+    }
 
     /**
      * Method returns a new singelton instance of the unit factory.
@@ -53,7 +54,7 @@ public class ObjectBoxFactory implements Factory<ObjectBox, UnitConfigType.UnitC
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @param config {@inheritDoc}
      * @return {@inheritDoc}
      * @throws InstantiationException {@inheritDoc}
@@ -64,12 +65,12 @@ public class ObjectBoxFactory implements Factory<ObjectBox, UnitConfigType.UnitC
         try {
             ObjectBox box = new ObjectBox();
             box.applyConfigUpdate(config);
-            //TODO: Add to log!
-            LOGGER.info("Created object for unit "+config.getLabel()+" with id "+config.getId());
+            //TODO: Maybe make debug!
+            LOGGER.info("Created object for unit " + config.getLabel() + " with id " + config.getId());
             return box;
         } catch (CouldNotPerformException ex) {
             throw new InstantiationException(ObjectBox.class, ex);
         }
     }
-    
+
 }

@@ -21,7 +21,6 @@ package org.openbase.bco.stage.jp;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import org.openbase.jps.preset.AbstractJPBoolean;
 
 /**
@@ -30,22 +29,27 @@ import org.openbase.jps.preset.AbstractJPBoolean;
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class JPFilterPscUnits extends AbstractJPBoolean {
-    /** The identifiers that can be used in front of the command line argument. */
+
+    /**
+     * The identifiers that can be used in front of the command line argument.
+     */
     public final static String[] COMMAND_IDENTIFIERS = {"-f", "--filter-units"};
 
-    /** Constructor. */
+    /**
+     * Constructor.
+     */
     public JPFilterPscUnits() {
         super(COMMAND_IDENTIFIERS);
     }
 
     /**
-     * {@inheritDoc} 
-     * 
+     * {@inheritDoc}
+     *
      * @return {@inheritDoc}
      */
     @Override
     public String getDescription() {
         return "If true, the program will use the psc unit filters specified in --fl.";
     }
-    
+
 }

@@ -21,13 +21,12 @@ package org.openbase.bco.stage;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.util.List;
 import javafx.application.Application;
 import org.openbase.bco.psc.lib.jp.JPLocalInput;
 import org.openbase.bco.psc.lib.jp.JPPostureScope;
-import org.openbase.bco.psc.lib.jp.JPRayScope;
 import org.openbase.bco.psc.lib.jp.JPPscUnitFilterList;
+import org.openbase.bco.psc.lib.jp.JPRayScope;
 import org.openbase.bco.psc.lib.jp.JPSelectedUnitScope;
 import org.openbase.bco.stage.jp.JPDisableRegistry;
 import org.openbase.bco.stage.jp.JPFilterPscUnits;
@@ -40,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author cmcastil
  */
 public class Stage extends Application {
+
     public static final String APPLICATION_NAME = "BCO Stage";
     private static final Logger LOGGER = LoggerFactory.getLogger(Stage.class);
 
@@ -58,7 +58,7 @@ public class Stage extends Application {
         String[] args = parameters.toArray(new String[parameters.size()]);
         JPService.parseAndExitOnError(args);
 //        JPService.printHelp();
-        
+
         Controller.initInstance(primaryStage);
     }
 

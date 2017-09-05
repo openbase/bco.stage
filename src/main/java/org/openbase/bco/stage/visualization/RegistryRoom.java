@@ -21,7 +21,6 @@ package org.openbase.bco.stage.visualization;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;

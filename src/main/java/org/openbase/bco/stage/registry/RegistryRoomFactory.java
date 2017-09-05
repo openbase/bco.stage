@@ -21,7 +21,6 @@ package org.openbase.bco.stage.registry;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import org.openbase.bco.stage.visualization.RegistryRoom;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.InstantiationException;
@@ -33,11 +32,13 @@ import rst.domotic.unit.UnitConfigType;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class RegistryRoomFactory implements Factory<RegistryRoom, UnitConfigType.UnitConfig>  {
+public class RegistryRoomFactory implements Factory<RegistryRoom, UnitConfigType.UnitConfig> {
+
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(RegistryRoomFactory.class);
     private static RegistryRoomFactory instance;
-    
-    private RegistryRoomFactory(){}
+
+    private RegistryRoomFactory() {
+    }
 
     /**
      * Method returns a new singelton instance of the unit factory.
@@ -53,7 +54,7 @@ public class RegistryRoomFactory implements Factory<RegistryRoom, UnitConfigType
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @param config {@inheritDoc}
      * @return {@inheritDoc}
      * @throws InstantiationException {@inheritDoc}
@@ -64,11 +65,11 @@ public class RegistryRoomFactory implements Factory<RegistryRoom, UnitConfigType
         try {
             RegistryRoom room = new RegistryRoom();
             room.applyConfigUpdate(config);
-            LOGGER.info("Created room for unit "+config.getLabel()+" with id "+config.getId());
+            LOGGER.info("Created room for unit " + config.getLabel() + " with id " + config.getId());
             return room;
         } catch (CouldNotPerformException ex) {
             throw new InstantiationException(RegistryRoom.class, ex);
         }
     }
-    
+
 }
