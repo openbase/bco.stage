@@ -27,9 +27,7 @@ import javafx.scene.paint.Material;
 import javafx.scene.shape.Box;
 import javax.vecmath.AxisAngle4d;
 import javax.vecmath.Point3d;
-import org.openbase.bco.dal.remote.unit.AbstractUnitRemote;
-import org.openbase.bco.dal.remote.unit.Units;
-import org.openbase.bco.stage.Controller;
+import org.openbase.bco.registry.remote.Registries;
 import org.openbase.bco.stage.registry.JavaFX3dObjectRegistryEntry;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.NotAvailableException;
@@ -47,13 +45,12 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
 
     private static final Material DEFAULT_MATERIAL = PhongMaterialManager.getInstance().white;
 
-    private static final int COOLDOWN_TIME = 3000;
-
+//    private static final int COOLDOWN_TIME = 3000;
     private final Box box;
 
     private UnitConfig config;
-    private Thread cooldownThread;
-    private long highlightEndTime;
+//    private Thread cooldownThread;
+//    private long highlightEndTime;
 
     public ObjectBox() {
         box = new Box();
@@ -62,14 +59,17 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
     }
 
     @Override
-    public synchronized UnitConfig applyConfigUpdate(UnitConfig config) throws InterruptedException, CouldNotPerformException {
+    public synchronized UnitConfig applyConfigUpdate(final UnitConfig config) throws InterruptedException, CouldNotPerformException {
         try {
             this.config = config;
             AxisAlignedBoundingBox3DFloat boundingBox = config.getPlacementConfig().getShape().getBoundingBox();
-            AbstractUnitRemote unit = (AbstractUnitRemote) Units.getUnit(config, false);
-            Point3d center = unit.getGlobalBoundingBoxCenterPoint3d();
+            //TODO: Replace this by a solution without AbstractUnitRemote, which Marian is working on.
+            //TODO: This is causing erroneous visualizations, as the data is updated later in there?
+            //TODO: Check that! For translations it works ok.
+
+            Point3d center = Registries.getLocationRegistry(true).getUnitBoundingBoxCenterGlobalPoint3d(config);
             AxisAngle4d aa = new AxisAngle4d();
-            aa.set(unit.getGlobalRotationQuat4d());
+            aa.set(Registries.getLocationRegistry(true).getUnitRotationGlobalQuat4d(config));
 
             Platform.runLater(() -> {
                 box.setVisible(true);
@@ -88,10 +88,6 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
                     LOGGER.info("0.1 box");
                     box.setHeight(0.09999);
                 }
-
-                box.setWidth(0.1);
-                box.setDepth(0.1);
-                box.setHeight(0.09999);
 
                 box.setRotationAxis(new Point3D(aa.x, aa.y, aa.z));
                 box.setRotate(aa.angle / Math.PI * 180);
@@ -137,30 +133,30 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
         } else {
             setMaterial(PhongMaterialManager.getInstance().blue);
         }
-        highlightEndTime = System.currentTimeMillis() + COOLDOWN_TIME;
+        //TODO highlight longer for threshold exceeding strengths
         LOGGER.trace("highlighting ObjectBox of " + config.getLabel() + " with id: " + config.getId());
-        if (cooldownThread == null || !cooldownThread.isAlive()) {
-            cooldownThread = new Thread(() -> {
-                long time_diff = getHighlightEndTime() - System.currentTimeMillis();
-                while (time_diff > 0) {
-                    try {
-                        Thread.sleep(time_diff);
-                    } catch (InterruptedException ex) {
-                        Thread.currentThread().interrupt();
-                        Controller.criticalError(ex);
-                    }
-                    time_diff = getHighlightEndTime() - System.currentTimeMillis();
-                }
-                setMaterial(DEFAULT_MATERIAL);
-            });
-            cooldownThread.start();
-        }
+//        highlightEndTime = System.currentTimeMillis() + COOLDOWN_TIME;
+//        if (cooldownThread == null || !cooldownThread.isAlive()) {
+//            cooldownThread = new Thread(() -> {
+//                long time_diff = getHighlightEndTime() - System.currentTimeMillis();
+//                while (time_diff > 0) {
+//                    try {
+//                        Thread.sleep(time_diff);
+//                    } catch (InterruptedException ex) {
+//                        Thread.currentThread().interrupt();
+//                        Controller.criticalError(ex);
+//                    }
+//                    time_diff = getHighlightEndTime() - System.currentTimeMillis();
+//                }
+//                setMaterial(DEFAULT_MATERIAL);
+//            });
+//            cooldownThread.start();
+//        }
     }
 
-    private synchronized long getHighlightEndTime() {
-        return highlightEndTime;
-    }
-
+//    private synchronized long getHighlightEndTime() {
+//        return highlightEndTime;
+//    }
     private void setMaterial(Material material) {
         Platform.runLater(() -> box.setMaterial(material));
     }
