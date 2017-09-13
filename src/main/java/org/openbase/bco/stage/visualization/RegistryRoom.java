@@ -94,7 +94,7 @@ public class RegistryRoom implements JavaFX3dObjectRegistryEntry<String, UnitCon
         ShapeType.Shape shape = config.getPlacementConfig().getShape();
         Transform3D inverseTransform;
         try {
-            inverseTransform = Units.getUnitTransformation(config).get().getTransform();
+            inverseTransform = Units.getRootToUnitTransformationFuture(config).get().getTransform();
             inverseTransform.invert();
             List<Point3D> floorPoints = transformPositions(shape.getFloorList(), inverseTransform);
             List<Point3D> ceilingPoints = transformPositions(shape.getCeilingList(), inverseTransform);
