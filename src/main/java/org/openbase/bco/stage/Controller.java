@@ -160,11 +160,9 @@ public final class Controller extends AbstractEventHandler {
                         }
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt();
-                        ExceptionPrinter.printHistory(ex, logger, LogLevel.ERROR);
-                        return false;
+                        throw new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex);
                     } catch (CouldNotPerformException ex) {
-                        ExceptionPrinter.printHistory(ex, logger, LogLevel.ERROR);
-                        return false;
+                        throw new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex);
                     }
                 }
             };
@@ -173,7 +171,14 @@ public final class Controller extends AbstractEventHandler {
                     GUIManager.getInstance().getRoomRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), RegistryRoomFactory.getInstance()) {
                 @Override
                 public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
-                    return config.getType() == UnitType.LOCATION;
+                    try {
+                        return config.getType() == UnitType.LOCATION && PointingUnitChecker.hasLocationData(config);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        throw new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex);
+                    } catch (CouldNotPerformException ex) {
+                        throw new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex);
+                    }
                 }
             };
 
