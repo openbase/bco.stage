@@ -62,10 +62,10 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
     public synchronized UnitConfig applyConfigUpdate(final UnitConfig config) throws InterruptedException, CouldNotPerformException {
         try {
             this.config = config;
-            AxisAlignedBoundingBox3DFloat boundingBox = config.getPlacementConfig().getShape().getBoundingBox();
-            //TODO: Replace this by a solution without AbstractUnitRemote, which Marian is working on.
-            //TODO: This is causing erroneous visualizations, as the data is updated later in there?
-            //TODO: Check that! For translations it works ok.
+            //TODO: Ask Marian how this can work, if I only synchronize the units themselves?!
+            AxisAlignedBoundingBox3DFloat boundingBox = Registries.getLocationRegistry(true).getUnitShape(config).getBoundingBox();
+            // TODO: Are there still visualization errors when changing the bounding box size but not the translation?
+            // Previously the box was moved sometimes.
 
             Point3d center = Registries.getLocationRegistry(true).getUnitBoundingBoxCenterGlobalPoint3d(config);
             AxisAngle4d aa = new AxisAngle4d();
@@ -85,7 +85,6 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
 
                 //Workaround:
                 if (boundingBox.getWidth() == 0.1f && boundingBox.getDepth() == 0.1f && boundingBox.getHeight() == 0.1f) {
-                    LOGGER.info("0.1 box");
                     box.setHeight(0.09999);
                 }
 

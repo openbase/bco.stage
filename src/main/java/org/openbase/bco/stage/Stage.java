@@ -24,6 +24,7 @@ package org.openbase.bco.stage;
 import java.util.List;
 import javafx.application.Application;
 import org.openbase.bco.psc.lib.jp.JPLocalInput;
+import org.openbase.bco.psc.lib.jp.JPPSCBaseScope;
 import org.openbase.bco.psc.lib.jp.JPPostureScope;
 import org.openbase.bco.psc.lib.jp.JPPscUnitFilterList;
 import org.openbase.bco.psc.lib.jp.JPRayScope;
@@ -47,6 +48,7 @@ public class Stage extends Application {
     public void start(javafx.stage.Stage primaryStage) {
         /* Setup JPService */
         JPService.setApplicationName(APPLICATION_NAME);
+        JPService.registerProperty(JPPSCBaseScope.class);
         JPService.registerProperty(JPPostureScope.class);
         JPService.registerProperty(JPRayScope.class);
         JPService.registerProperty(JPSelectedUnitScope.class);
