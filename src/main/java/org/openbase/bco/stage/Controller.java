@@ -72,6 +72,8 @@ public final class Controller extends AbstractEventHandler {
     private boolean usePSCFilter;
     private boolean connectedRegistry = false;
 
+    private RSBConnection rsbConnection;
+
     // TODO list:
     // -InterruptedException niemals fangen!!!
     // -JavaFx stuff wie Line oder Ray in jul.visual.javafx einpflegen
@@ -106,7 +108,8 @@ public final class Controller extends AbstractEventHandler {
                     initializeRegistryConnection();
                 }
 
-                RSBConnection.initialize(this);
+                rsbConnection = new RSBConnection(this);
+                rsbConnection.init();
             } catch (CouldNotPerformException | JPNotAvailableException | InterruptedException ex) {
                 objectBoxRegistrySynchronizer.deactivate();
                 GUIManager.getInstance().close();

@@ -1,6 +1,7 @@
 package org.openbase.bco.stage.visualization;
 
-/*-
+/*
+ * -
  * #%L
  * BCO Stage
  * %%
@@ -13,11 +14,11 @@ package org.openbase.bco.stage.visualization;
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
+ * License along with this program. If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
@@ -37,7 +38,7 @@ import rst.tracking.TrackedPosture3DFloatType;
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class Skeleton extends Group {
-
+    
     private final static double JOINT_SIZE = 0.04;
     private final static double HEAD_SIZE = 0.10;
     private final static double CONNECTION_DIAMETER = 0.03;
@@ -53,10 +54,10 @@ public class Skeleton extends Group {
         new JointPair(Joints.KneeRight, Joints.AnkleRight), new JointPair(Joints.AnkleRight, Joints.FootRight),
         new JointPair(Joints.SpineBase, Joints.HipLeft), new JointPair(Joints.HipLeft, Joints.KneeLeft),
         new JointPair(Joints.KneeLeft, Joints.AnkleLeft), new JointPair(Joints.AnkleLeft, Joints.FootLeft)};
-
+    
     private final Sphere[] spheres;
     private final Line3D[] lines;
-
+    
     public Skeleton() {
         Material material = PhongMaterialManager.getInstance().nextSkeletonMaterial();
         spheres = new Sphere[25];
@@ -75,26 +76,33 @@ public class Skeleton extends Group {
             super.getChildren().add(lines[i]);
         }
     }
-
+    
     public void updatePositions(TrackedPosture3DFloatType.TrackedPosture3DFloat posture) {
         if (posture.getConfidenceCount() > 0) {
-            List<TranslationType.Translation> positionList = posture.getPosture().getPositionList();
+            final List<TranslationType.Translation> positionList = posture.getPosture().getPositionList();
             for (int i = 0; i < positionList.size(); i++) {
                 // Updating the joint positions
-                Point3D position = translationToPoint(positionList.get(i));
+                final Point3D position = translationToPoint(positionList.get(i));
                 spheres[i].setTranslateX(position.getX());
                 spheres[i].setTranslateY(position.getY());
                 spheres[i].setTranslateZ(position.getZ());
+                if (i == Joints.Head.getValue()) {
+                    spheres[i].setRadius(HEAD_SIZE * posture.getConfidence(i));
+                } else {
+                    spheres[i].setRadius(JOINT_SIZE * posture.getConfidence(i));
+                }
             }
             for (int i = 0; i < lines.length; i++) {
                 // Updating the joint connections.
                 Point3D joint1 = translationToPoint(positionList.get(JOINT_PAIRS[i].getJoint1().getValue()));
                 Point3D joint2 = translationToPoint(positionList.get(JOINT_PAIRS[i].getJoint2().getValue()));
                 lines[i].setStartEndPoints(joint1, joint2);
+                final double factor = Double.min(posture.getConfidence(JOINT_PAIRS[i].getJoint1().getValue()), posture.getConfidence(JOINT_PAIRS[i].getJoint2().getValue()));
+                lines[i].setWidth(CONNECTION_DIAMETER * factor);
             }
         }
     }
-
+    
     private Point3D translationToPoint(TranslationType.Translation translation) {
         return new Point3D(translation.getX(), translation.getY(), translation.getZ());
     }

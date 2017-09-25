@@ -22,9 +22,11 @@ package org.openbase.bco.stage.rsb;
  * #L%
  */
 import org.openbase.bco.psc.lib.jp.JPLocalInput;
+import org.openbase.bco.psc.lib.jp.JPPSCBaseScope;
 import org.openbase.bco.psc.lib.jp.JPPostureScope;
 import org.openbase.bco.psc.lib.jp.JPRayScope;
 import org.openbase.bco.psc.lib.jp.JPSelectedUnitScope;
+import org.openbase.bco.psc.lib.rsb.LocalConfigProviderInterface;
 import org.openbase.jps.core.JPService;
 import org.openbase.jps.exception.JPNotAvailableException;
 import org.openbase.jul.exception.CouldNotPerformException;
@@ -34,10 +36,8 @@ import rsb.Factory;
 import rsb.Listener;
 import rsb.RSBException;
 import rsb.Scope;
-import rsb.config.ParticipantConfig;
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
-import rsb.util.Properties;
 import rst.domotic.unit.UnitProbabilityCollectionType.UnitProbabilityCollection;
 import rst.tracking.PointingRay3DFloatDistributionCollectionType.PointingRay3DFloatDistributionCollection;
 import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
@@ -47,41 +47,40 @@ import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class RSBConnection {
+public class RSBConnection implements LocalConfigProviderInterface {
 
     /**
      * Logger instance.
      */
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(RSBConnection.class);
+    private final AbstractEventHandler handler;
+
     /**
      * RSB Listener used to receive posture events.
      */
-    private static Listener skeletonListener;
+    private Listener skeletonListener;
     /**
      * RSB Listener used to receive pointing ray events.
      */
-    private static Listener rayListener;
+    private Listener rayListener;
     /**
      * RSB Listener used to receive selected unit events.
      */
-    private static Listener selectedUnitListener;
+    private Listener selectedUnitListener;
 
-    /**
-     * Private Constructor should not be used.
-     */
-    private RSBConnection() {
+    public RSBConnection(AbstractEventHandler handler) {
+        this.handler = handler;
     }
 
     /**
      * Initializes the rsb connection.
      *
-     * @param handler is used to handle incoming events.
      * @throws CouldNotPerformException is thrown, if the initialization of the
      * class fails.
      * @throws InterruptedException is thrown in case of an external
      * interruption.
      */
-    public static void initialize(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException {
+    public void init() throws CouldNotPerformException, InterruptedException {
         LOGGER.info("Initializing RSB connection.");
         initializeListeners(handler);
     }
@@ -93,7 +92,7 @@ public class RSBConnection {
      * @throws InterruptedException is thrown in case of an external
      * interruption.
      */
-    public static void deactivate() throws CouldNotPerformException, InterruptedException {
+    public void deactivate() throws CouldNotPerformException, InterruptedException {
         LOGGER.info("Deactivating RSB connection.");
         try {
             skeletonListener.deactivate();
@@ -113,7 +112,7 @@ public class RSBConnection {
      * @throws InterruptedException is thrown in case of an external
      * interruption.
      */
-    private static void initializeListeners(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException {
+    private void initializeListeners(AbstractEventHandler handler) throws CouldNotPerformException, InterruptedException {
         LOGGER.debug("Registering converters.");
         final ProtocolBufferConverter<TrackedPostures3DFloat> postureConverter = new ProtocolBufferConverter<>(
                 TrackedPostures3DFloat.getDefaultInstance());
@@ -131,9 +130,10 @@ public class RSBConnection {
                 .addConverter(selectedUnitConverter);
 
         try {
-            Scope postureScope = JPService.getProperty(JPPostureScope.class).getValue();
-            Scope rayScope = JPService.getProperty(JPRayScope.class).getValue();
-            Scope selectedUnitScope = JPService.getProperty(JPSelectedUnitScope.class).getValue();
+            Scope baseScope = JPService.getProperty(JPPSCBaseScope.class).getValue();
+            Scope postureScope = baseScope.concat(JPService.getProperty(JPPostureScope.class).getValue());
+            Scope rayScope = baseScope.concat(JPService.getProperty(JPRayScope.class).getValue());
+            Scope selectedUnitScope = baseScope.concat(JPService.getProperty(JPSelectedUnitScope.class).getValue());
             LOGGER.info("Initializing RSB Posture Listener on scope: " + postureScope);
             LOGGER.info("Initializing RSB Ray Listener on scope: " + rayScope);
             LOGGER.info("Initializing RSB Selected Unit Listener on scope: " + selectedUnitScope);
@@ -159,22 +159,5 @@ public class RSBConnection {
         } catch (JPNotAvailableException | RSBException ex) {
             throw new CouldNotPerformException("RSB listener could not be initialized.", ex);
         }
-    }
-
-    /**
-     * Creates an RSB configuration for connecting via socket and localhost.
-     *
-     * @return the local communication configuration.
-     */
-    private static ParticipantConfig getLocalConfig() {
-        ParticipantConfig localConfig = Factory.getInstance().getDefaultParticipantConfig().copy();
-        Properties localProperties = new Properties();
-        localProperties.setProperty("transport.socket.host", "localhost");
-        localConfig.getTransports().values().forEach((tc) -> {
-            tc.setEnabled(false);
-        });
-        localConfig.getOrCreateTransport("socket").setEnabled(true);
-        localConfig.getOrCreateTransport("socket").setOptions(localProperties);
-        return localConfig;
     }
 }
