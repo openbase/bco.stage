@@ -30,15 +30,15 @@ import javafx.scene.shape.Sphere;
 import org.openbase.bco.psc.lib.pointing.JointPair;
 import org.openbase.bco.psc.lib.pointing.Joints;
 import org.openbase.jul.visual.javafx.geometry.Line3D;
-import rst.geometry.TranslationType;
-import rst.tracking.TrackedPosture3DFloatType;
+import rst.geometry.TranslationType.Translation;
+import rst.tracking.TrackedPosture3DFloatType.TrackedPosture3DFloat;
 
 /**
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
 public class Skeleton extends Group {
-    
+
     private final static double JOINT_SIZE = 0.04;
     private final static double HEAD_SIZE = 0.10;
     private final static double CONNECTION_DIAMETER = 0.03;
@@ -54,12 +54,11 @@ public class Skeleton extends Group {
         new JointPair(Joints.KneeRight, Joints.AnkleRight), new JointPair(Joints.AnkleRight, Joints.FootRight),
         new JointPair(Joints.SpineBase, Joints.HipLeft), new JointPair(Joints.HipLeft, Joints.KneeLeft),
         new JointPair(Joints.KneeLeft, Joints.AnkleLeft), new JointPair(Joints.AnkleLeft, Joints.FootLeft)};
-    
+
     private final Sphere[] spheres;
     private final Line3D[] lines;
-    
-    public Skeleton() {
-        Material material = PhongMaterialManager.getInstance().nextSkeletonMaterial();
+
+    public Skeleton(final Material material) {
         spheres = new Sphere[25];
         lines = new Line3D[JOINT_PAIRS.length];
         for (Joints j : Joints.values()) {
@@ -76,10 +75,10 @@ public class Skeleton extends Group {
             super.getChildren().add(lines[i]);
         }
     }
-    
-    public void updatePositions(TrackedPosture3DFloatType.TrackedPosture3DFloat posture) {
+
+    public void updatePositions(TrackedPosture3DFloat posture) {
         if (posture.getConfidenceCount() > 0) {
-            final List<TranslationType.Translation> positionList = posture.getPosture().getPositionList();
+            final List<Translation> positionList = posture.getPosture().getPositionList();
             for (int i = 0; i < positionList.size(); i++) {
                 // Updating the joint positions
                 final Point3D position = translationToPoint(positionList.get(i));
@@ -102,8 +101,8 @@ public class Skeleton extends Group {
             }
         }
     }
-    
-    private Point3D translationToPoint(TranslationType.Translation translation) {
+
+    private Point3D translationToPoint(Translation translation) {
         return new Point3D(translation.getX(), translation.getY(), translation.getZ());
     }
 }

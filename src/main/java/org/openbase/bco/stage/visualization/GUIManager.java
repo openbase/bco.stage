@@ -1,6 +1,7 @@
 package org.openbase.bco.stage.visualization;
 
-/*-
+/*
+ * -
  * #%L
  * BCO Stage
  * %%
@@ -13,11 +14,11 @@ package org.openbase.bco.stage.visualization;
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
+ * License along with this program. If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
@@ -72,7 +73,7 @@ public final class GUIManager {
     public final BooleanProperty rayVisibility = new SimpleBooleanProperty(true);
     public final BooleanProperty objectVisibility = new SimpleBooleanProperty(true);
 
-    private final Skeleton[] skeletons = new Skeleton[6];
+    private final List<Skeleton> skeletons = new ArrayList<>();
     private final List<PointingRay3D> rays = new ArrayList<>();
     private final SynchronizableRegistryImpl<String, ObjectBox> objectBoxRegistry;
     private final SynchronizableRegistryImpl<String, RegistryRoom> roomRegistry;
@@ -80,6 +81,7 @@ public final class GUIManager {
     private final Stage primaryStage;
     private final Group root = new Group();
     private final Group world = new Group();
+    private final Group skeletonGroup = new Group();
     private final Group rayGroup = new Group();
     private final Group objectGroup = new Group();
     private final Group roomGroup = new Group();
@@ -110,12 +112,13 @@ public final class GUIManager {
 //            room = new CSRARoom();
 //            world.getChildren().add(room);
             world.getChildren().add(roomGroup);
-            world.getChildren().add(objectGroup);
+            world.getChildren().add(skeletonGroup);
             world.getChildren().add(rayGroup);
-            buildSkeletons();
+            world.getChildren().add(objectGroup);
 
 //            room.visibleProperty().bind(roomVisibility);
             roomGroup.visibleProperty().bind(roomVisibility);
+            skeletonGroup.visibleProperty().bind(skeletonVisibility);
             rayGroup.visibleProperty().bind(rayVisibility);
             objectGroup.visibleProperty().bind(objectVisibility);
 
@@ -223,27 +226,33 @@ public final class GUIManager {
         world.getChildren().add(axisGroup);
     }
 
-    private void buildSkeletons() {
-        LOGGER.debug("Creating skeleton visualizations.");
-        Group skeletonGroup = new Group();
-        for (int i = 0; i < skeletons.length; i++) {
-            skeletons[i] = new Skeleton();
-            skeletonGroup.getChildren().add(skeletons[i]);
-            skeletons[i].setVisible(false);
-        }
-        skeletonGroup.visibleProperty().bind(skeletonVisibility);
-        world.getChildren().add(skeletonGroup);
-    }
-
     private synchronized void updateOrCreateSkeletons(TrackedPostures3DFloat postures) {
         Platform.runLater(() -> {
+            LOGGER.trace("Updating or creating skeletons.");
+            int difference = postures.getPostureCount() - skeletons.size();
+            if (difference > 0) {
+                LOGGER.trace("Adding new skeletons.");
+                for (int i = 0; i < difference; i++) {
+                    Skeleton s = new Skeleton(PhongMaterialManager.getInstance().getSkeletonMaterial(skeletons.size()));
+                    skeletons.add(s);
+                    skeletonGroup.getChildren().add(s);
+                }
+            } else {
+                LOGGER.trace("Removing skeletons.");
+                for (int i = 0; i < -difference; i++) {
+                    Skeleton s = skeletons.get(postures.getPostureCount());
+                    skeletonGroup.getChildren().remove(s);
+                    skeletons.remove(postures.getPostureCount());
+                }
+            }
+            LOGGER.trace("Updating existing skeletons.");
             for (int i = 0; i < postures.getPostureCount(); i++) {
                 TrackedPosture3DFloat posture = postures.getPosture(i);
                 if (posture.getConfidenceCount() > 0) {
-                    skeletons[i].updatePositions(posture);
-                    skeletons[i].setVisible(true);
+                    skeletons.get(i).updatePositions(posture);
+                    skeletons.get(i).setVisible(true);
                 } else {
-                    skeletons[i].setVisible(false);
+                    skeletons.get(i).setVisible(false);
                 }
             }
         });
