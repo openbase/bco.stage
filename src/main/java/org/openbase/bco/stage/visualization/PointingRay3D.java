@@ -24,7 +24,7 @@ package org.openbase.bco.stage.visualization;
  */
 import javafx.scene.paint.Material;
 import org.openbase.jul.visual.javafx.geometry.Ray3D;
-import rst.tracking.PointingRay3DFloatType;
+import rst.tracking.PointingRay3DFloatType.PointingRay3DFloat;
 
 /**
  *
@@ -40,13 +40,13 @@ public class PointingRay3D extends Ray3D {
         super(PhongMaterialManager.getInstance().white);
     }
 
-    public PointingRay3D(double rayLength) {
+    public PointingRay3D(final double rayLength) {
         super(PhongMaterialManager.getInstance().white, rayLength);
     }
 
-    public void update(PointingRay3DFloatType.PointingRay3DFloat ray) {
+    public void update(final PointingRay3DFloat ray) {
         super.update(ray.getRay());
-        Material material;
+        final Material material;
         switch (ray.getType()) {
             case HEAD_HAND:
                 material = PhongMaterialManager.getInstance().red;

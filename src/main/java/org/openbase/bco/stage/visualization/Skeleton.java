@@ -93,8 +93,8 @@ public class Skeleton extends Group {
             }
             for (int i = 0; i < lines.length; i++) {
                 // Updating the joint connections.
-                Point3D joint1 = translationToPoint(positionList.get(JOINT_PAIRS[i].getJoint1().getValue()));
-                Point3D joint2 = translationToPoint(positionList.get(JOINT_PAIRS[i].getJoint2().getValue()));
+                final Point3D joint1 = translationToPoint(positionList.get(JOINT_PAIRS[i].getJoint1().getValue()));
+                final Point3D joint2 = translationToPoint(positionList.get(JOINT_PAIRS[i].getJoint2().getValue()));
                 lines[i].setStartEndPoints(joint1, joint2);
                 final double factor = Double.min(posture.getConfidence(JOINT_PAIRS[i].getJoint1().getValue()), posture.getConfidence(JOINT_PAIRS[i].getJoint2().getValue()));
                 lines[i].setWidth(CONNECTION_DIAMETER * factor);
