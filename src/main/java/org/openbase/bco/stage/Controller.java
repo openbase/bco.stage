@@ -77,8 +77,6 @@ public final class Controller extends AbstractEventHandler {
 
     // TODO list:
     // -InterruptedException niemals fangen!!!
-    // -JavaFx stuff wie Line oder Ray in jul.visual.javafx einpflegen
-    // - Remove mainLoop and replace by runLater stuff in the components.
     // -Check behavior of RegistrySynchronizer in case an unverified object becomes verified. (Should register but maybe only update called).
     public synchronized static Controller initInstance(Stage primaryStage) {
         if (instance == null) {
@@ -191,7 +189,6 @@ public final class Controller extends AbstractEventHandler {
             roomRegistrySynchronizer.activate();
             connectedRegistry = true;
         } catch (NotAvailableException ex) {
-            //TODO: Add here what to press.
             ExceptionPrinter.printHistory(new CouldNotPerformException("Could not connect to the registry. To try reconnecting, hit C.", ex), LOGGER, LogLevel.WARN);
         } catch (CouldNotPerformException ex) {
             throw new CouldNotPerformException("The RegistrySynchronization could not be activated although connection to the registry is possible.", ex);
