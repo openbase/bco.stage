@@ -1,6 +1,7 @@
 package org.openbase.bco.stage.visualization;
 
-/*-
+/*
+ * -
  * #%L
  * BCO Stage
  * %%
@@ -13,17 +14,17 @@ package org.openbase.bco.stage.visualization;
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
+ * License along with this program. If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 import javafx.scene.paint.Material;
 import org.openbase.jul.visual.javafx.geometry.Ray3D;
-import rst.tracking.PointingRay3DFloatType;
+import rst.tracking.PointingRay3DFloatType.PointingRay3DFloat;
 
 /**
  *
@@ -39,13 +40,13 @@ public class PointingRay3D extends Ray3D {
         super(PhongMaterialManager.getInstance().white);
     }
 
-    public PointingRay3D(double rayLength) {
+    public PointingRay3D(final double rayLength) {
         super(PhongMaterialManager.getInstance().white, rayLength);
     }
 
-    public void update(PointingRay3DFloatType.PointingRay3DFloat ray) {
+    public void update(final PointingRay3DFloat ray) {
         super.update(ray.getRay());
-        Material material;
+        final Material material;
         switch (ray.getType()) {
             case HEAD_HAND:
                 material = PhongMaterialManager.getInstance().red;

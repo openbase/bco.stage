@@ -1,6 +1,7 @@
 package org.openbase.bco.stage;
 
-/*-
+/*
+ * -
  * #%L
  * BCO Stage
  * %%
@@ -13,11 +14,11 @@ package org.openbase.bco.stage;
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
+ * License along with this program. If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
@@ -76,8 +77,6 @@ public final class Controller extends AbstractEventHandler {
 
     // TODO list:
     // -InterruptedException niemals fangen!!!
-    // -JavaFx stuff wie Line oder Ray in jul.visual.javafx einpflegen
-    // - Remove mainLoop and replace by runLater stuff in the components.
     // -Check behavior of RegistrySynchronizer in case an unverified object becomes verified. (Should register but maybe only update called).
     public synchronized static Controller initInstance(Stage primaryStage) {
         if (instance == null) {
@@ -130,15 +129,15 @@ public final class Controller extends AbstractEventHandler {
     public void handleEvent(final Event event) {
         if (event.getData() instanceof TrackedPostures3DFloat) {
             LOGGER.trace("New TrackedPostures3DFloat event received.");
-            TrackedPostures3DFloat postures = (TrackedPostures3DFloat) event.getData();
+            final TrackedPostures3DFloat postures = (TrackedPostures3DFloat) event.getData();
             GUIManager.getInstance().updateSkeletonData(postures);
         } else if (event.getData() instanceof PointingRay3DFloatDistributionCollection) {
             LOGGER.trace("New PointingRay3DFloatCollection event received.");
-            PointingRay3DFloatDistributionCollection pointingRays = (PointingRay3DFloatDistributionCollection) event.getData();
+            final PointingRay3DFloatDistributionCollection pointingRays = (PointingRay3DFloatDistributionCollection) event.getData();
             GUIManager.getInstance().updateRayData(pointingRays);
         } else if (event.getData() instanceof UnitProbabilityCollection) {
             LOGGER.trace("New UnitProbabilityCollection event received.");
-            UnitProbabilityCollection selectedUnits = (UnitProbabilityCollection) event.getData();
+            final UnitProbabilityCollection selectedUnits = (UnitProbabilityCollection) event.getData();
             GUIManager.getInstance().highlightObjects(selectedUnits);
         }
     }
@@ -190,7 +189,6 @@ public final class Controller extends AbstractEventHandler {
             roomRegistrySynchronizer.activate();
             connectedRegistry = true;
         } catch (NotAvailableException ex) {
-            //TODO: Add here what to press.
             ExceptionPrinter.printHistory(new CouldNotPerformException("Could not connect to the registry. To try reconnecting, hit C.", ex), LOGGER, LogLevel.WARN);
         } catch (CouldNotPerformException ex) {
             throw new CouldNotPerformException("The RegistrySynchronization could not be activated although connection to the registry is possible.", ex);

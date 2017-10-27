@@ -1,6 +1,7 @@
 package org.openbase.bco.stage.visualization;
 
-/*-
+/*
+ * -
  * #%L
  * BCO Stage
  * %%
@@ -13,16 +14,17 @@ package org.openbase.bco.stage.visualization;
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
+ * License along with this program. If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -45,7 +47,6 @@ import org.openbase.jul.visual.javafx.geometry.Line3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rst.domotic.unit.UnitProbabilityCollectionType.UnitProbabilityCollection;
-import rst.domotic.unit.UnitProbabilityType.UnitProbability;
 import rst.tracking.PointingRay3DFloatDistributionCollectionType.PointingRay3DFloatDistributionCollection;
 import rst.tracking.PointingRay3DFloatType.PointingRay3DFloat;
 import rst.tracking.TrackedPosture3DFloatType.TrackedPosture3DFloat;
@@ -72,20 +73,21 @@ public final class GUIManager {
     public final BooleanProperty rayVisibility = new SimpleBooleanProperty(true);
     public final BooleanProperty objectVisibility = new SimpleBooleanProperty(true);
 
-    private final Skeleton[] skeletons = new Skeleton[6];
-    private final List<PointingRay3D> rays = new ArrayList<>();
+    private final LinkedList<Skeleton> skeletons = new LinkedList<>();
+    private final LinkedList<PointingRay3D> rays = new LinkedList<>();
     private final SynchronizableRegistryImpl<String, ObjectBox> objectBoxRegistry;
     private final SynchronizableRegistryImpl<String, RegistryRoom> roomRegistry;
 
     private final Stage primaryStage;
     private final Group root = new Group();
     private final Group world = new Group();
+    private final Group skeletonGroup = new Group();
     private final Group rayGroup = new Group();
     private final Group objectGroup = new Group();
     private final Group roomGroup = new Group();
 //    private final CSRARoom room;
 
-    public static GUIManager initInstance(Stage primaryStage) throws InstantiationException {
+    public static GUIManager initInstance(final Stage primaryStage) throws InstantiationException {
         if (instance == null) {
             instance = new GUIManager(primaryStage);
         }
@@ -96,7 +98,7 @@ public final class GUIManager {
         return instance;
     }
 
-    private GUIManager(Stage primaryStage) throws InstantiationException {
+    private GUIManager(final Stage primaryStage) throws InstantiationException {
         try {
             LOGGER.info("Setting up the 3D - scene.");
             this.primaryStage = primaryStage;
@@ -110,16 +112,17 @@ public final class GUIManager {
 //            room = new CSRARoom();
 //            world.getChildren().add(room);
             world.getChildren().add(roomGroup);
-            world.getChildren().add(objectGroup);
+            world.getChildren().add(skeletonGroup);
             world.getChildren().add(rayGroup);
-            buildSkeletons();
+            world.getChildren().add(objectGroup);
 
 //            room.visibleProperty().bind(roomVisibility);
             roomGroup.visibleProperty().bind(roomVisibility);
+            skeletonGroup.visibleProperty().bind(skeletonVisibility);
             rayGroup.visibleProperty().bind(rayVisibility);
             objectGroup.visibleProperty().bind(objectVisibility);
 
-            Scene scene = new Scene(root, 1024, 768, true);
+            final Scene scene = new Scene(root, 1024, 768, true);
             connectCamera(scene);
             scene.setFill(Color.GREY);
 
@@ -144,18 +147,18 @@ public final class GUIManager {
         primaryStage.close();
     }
 
-    public synchronized void updateSkeletonData(TrackedPostures3DFloat postures) {
+    public synchronized void updateSkeletonData(final TrackedPostures3DFloat postures) {
         updateOrCreateSkeletons(postures);
     }
 
-    public synchronized void updateRayData(PointingRay3DFloatDistributionCollection pointingRays) {
+    public synchronized void updateRayData(final PointingRay3DFloatDistributionCollection pointingRays) {
         updateOrCreateRays(pointingRays.getElementList().stream()
                 .map((rayDistribution) -> rayDistribution.getRayList())
                 .flatMap(List::stream)
                 .collect(Collectors.toList()));
     }
 
-    private void connectCamera(Scene scene) {
+    private void connectCamera(final Scene scene) {
         LOGGER.debug("Connecting camera to the scene.");
         scene.setOnMousePressed(MoveableCamera.getInstance());
         scene.setOnMouseDragged(MoveableCamera.getInstance());
@@ -211,9 +214,9 @@ public final class GUIManager {
 
     private void buildAxes() {
         LOGGER.debug("Creating axes visualization.");
-        Group axisGroup = new Group();
+        final Group axisGroup = new Group();
 
-        PhongMaterialManager mm = PhongMaterialManager.getInstance();
+        final PhongMaterialManager mm = PhongMaterialManager.getInstance();
         final Line3D xLine = new Line3D(Line3D.LineType.BOX, AXIS_WIDTH, mm.red, new Point3D(-AXIS_LENGTH, 0, 0), new Point3D(AXIS_LENGTH, 0, 0));
         final Line3D yLine = new Line3D(Line3D.LineType.BOX, AXIS_WIDTH, mm.green, new Point3D(0, -AXIS_LENGTH, 0), new Point3D(0, AXIS_LENGTH, 0));
         final Line3D zLine = new Line3D(Line3D.LineType.BOX, AXIS_WIDTH, mm.blue, new Point3D(0, 0, -AXIS_LENGTH), new Point3D(0, 0, AXIS_LENGTH));
@@ -223,54 +226,63 @@ public final class GUIManager {
         world.getChildren().add(axisGroup);
     }
 
-    private void buildSkeletons() {
-        LOGGER.debug("Creating skeleton visualizations.");
-        Group skeletonGroup = new Group();
-        for (int i = 0; i < skeletons.length; i++) {
-            skeletons[i] = new Skeleton();
-            skeletonGroup.getChildren().add(skeletons[i]);
-            skeletons[i].setVisible(false);
-        }
-        skeletonGroup.visibleProperty().bind(skeletonVisibility);
-        world.getChildren().add(skeletonGroup);
-    }
-
-    private synchronized void updateOrCreateSkeletons(TrackedPostures3DFloat postures) {
+    private synchronized void updateOrCreateSkeletons(final TrackedPostures3DFloat postures) {
         Platform.runLater(() -> {
-            for (int i = 0; i < postures.getPostureCount(); i++) {
-                TrackedPosture3DFloat posture = postures.getPosture(i);
+            LOGGER.trace("Updating or creating skeletons.");
+            final int difference = postures.getPostureCount() - skeletons.size();
+            if (difference > 0) {
+                LOGGER.trace("Adding new skeletons.");
+                for (int i = 0; i < difference; i++) {
+                    final Skeleton s = new Skeleton(PhongMaterialManager.getInstance().getSkeletonMaterial(skeletons.size()));
+                    skeletons.addLast(s);
+                    skeletonGroup.getChildren().add(s);
+                }
+            } else {
+                LOGGER.trace("Removing skeletons.");
+                for (int i = 0; i < -difference; i++) {
+                    final Skeleton s = skeletons.removeLast();
+                    skeletonGroup.getChildren().remove(s);
+                }
+            }
+            LOGGER.trace("Updating existing skeletons.");
+            final ListIterator<Skeleton> iterator = skeletons.listIterator();
+            while (iterator.hasNext()) {
+                final int i = iterator.nextIndex();
+                final Skeleton s = iterator.next();
+                final TrackedPosture3DFloat posture = postures.getPosture(i);
                 if (posture.getConfidenceCount() > 0) {
-                    skeletons[i].updatePositions(posture);
-                    skeletons[i].setVisible(true);
+                    s.updatePositions(posture);
+                    s.setVisible(true);
                 } else {
-                    skeletons[i].setVisible(false);
+                    s.setVisible(false);
                 }
             }
         });
     }
 
-    private synchronized void updateOrCreateRays(List<PointingRay3DFloat> pointingRays) {
+    private synchronized void updateOrCreateRays(final List<PointingRay3DFloat> pointingRays) {
         Platform.runLater(() -> {
             LOGGER.trace("Updating or creating rays.");
-            int difference = pointingRays.size() - rays.size();
+            final int difference = pointingRays.size() - rays.size();
             if (difference > 0) {
                 LOGGER.trace("Adding new rays.");
                 for (int i = 0; i < difference; i++) {
-                    PointingRay3D r = new PointingRay3D();
-                    rays.add(r);
+                    final PointingRay3D r = new PointingRay3D();
+                    rays.addLast(r);
                     rayGroup.getChildren().add(r);
                 }
             } else {
                 LOGGER.trace("Removing rays.");
                 for (int i = 0; i < -difference; i++) {
-                    PointingRay3D r = rays.get(pointingRays.size());
+                    final PointingRay3D r = rays.removeLast();
                     rayGroup.getChildren().remove(r);
-                    rays.remove(pointingRays.size());
                 }
             }
             LOGGER.trace("Updating existing rays.");
-            for (int i = 0; i < pointingRays.size(); i++) {
-                rays.get(i).update(pointingRays.get(i));
+            final ListIterator<PointingRay3D> iterator = rays.listIterator();
+            while (iterator.hasNext()) {
+                final int i = iterator.nextIndex();
+                iterator.next().update(pointingRays.get(i));
             }
         });
     }
@@ -291,8 +303,8 @@ public final class GUIManager {
         return objectBoxRegistry;
     }
 
-    public void highlightObjects(UnitProbabilityCollection selectedUnits) {
-        for (UnitProbability up : selectedUnits.getElementList()) {
+    public void highlightObjects(final UnitProbabilityCollection selectedUnits) {
+        selectedUnits.getElementList().forEach((up) -> {
             try {
                 if (objectBoxRegistry.contains(up.getId())) {
                     objectBoxRegistry.get(up.getId()).highlight(up.getProbability());
@@ -302,6 +314,6 @@ public final class GUIManager {
             } catch (CouldNotPerformException ex) {
                 ExceptionPrinter.printHistory(new CouldNotPerformException("Could not check objectBoxRegistry for id: " + up.getId(), ex), LOGGER, LogLevel.WARN);
             }
-        }
+        });
     }
 }

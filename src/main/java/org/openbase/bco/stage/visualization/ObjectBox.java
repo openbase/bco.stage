@@ -1,6 +1,7 @@
 package org.openbase.bco.stage.visualization;
 
-/*-
+/*
+ * -
  * #%L
  * BCO Stage
  * %%
@@ -10,23 +11,25 @@ package org.openbase.bco.stage.visualization;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
+ * License along with this program. If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import java.util.Objects;
 import javafx.application.Platform;
 import javafx.geometry.Point3D;
 import javafx.scene.paint.Material;
 import javafx.scene.shape.Box;
 import javax.vecmath.AxisAngle4d;
 import javax.vecmath.Point3d;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openbase.bco.registry.remote.Registries;
 import org.openbase.bco.stage.registry.JavaFX3dObjectRegistryEntry;
 import org.openbase.jul.exception.CouldNotPerformException;
@@ -158,5 +161,38 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
 //    }
     private void setMaterial(Material material) {
         Platform.runLater(() -> box.setMaterial(material));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(config)
+                .toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param obj {@inheritDoc}
+     * @return {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ObjectBox other = (ObjectBox) obj;
+        return Objects.equals(this.config, other.config);
     }
 }

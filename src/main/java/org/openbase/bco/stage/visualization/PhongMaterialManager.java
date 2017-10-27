@@ -1,6 +1,7 @@
 package org.openbase.bco.stage.visualization;
 
-/*-
+/*
+ * -
  * #%L
  * BCO Stage
  * %%
@@ -13,11 +14,11 @@ package org.openbase.bco.stage.visualization;
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
+ * License along with this program. If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
@@ -93,12 +94,18 @@ public class PhongMaterialManager {
         return instance;
     }
 
+    public PhongMaterial getSkeletonMaterial(int index) {
+        while (index >= skeletonMaterials.size()) {
+            index -= skeletonMaterials.size();
+        }
+        return skeletonMaterials.get(index);
+    }
+
     public PhongMaterial nextSkeletonMaterial() {
-        PhongMaterial material = skeletonMaterials.get(index++);
         if (index >= skeletonMaterials.size()) {
             index = 0;
         }
-        return material;
+        return getSkeletonMaterial(index++);
     }
 
 }
