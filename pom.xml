@@ -238,7 +238,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <target.java.version>1.8</target.java.version>
         <source.java.version>1.8</source.java.version>
-        <dependency.bco.version>1.5-SNAPSHOT</dependency.bco.version>
+        <dependency.bco.version>[1.5,1.6-alpha)</dependency.bco.version>
         <dependency.jul.version>${dependency.bco.version}</dependency.jul.version>
         <!--<dependency.bco.registry.version>${dependency.bco.version}</dependency.bco.registry.version>-->
         <!--<dependency.bco.dal.version>${dependency.bco.version}</dependency.bco.dal.version>-->
