@@ -27,6 +27,7 @@ import javafx.scene.Group;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.InstantiationException;
 import org.openbase.jul.pattern.Factory;
+import org.openbase.jul.storage.registry.RegistryRemote;
 import org.openbase.jul.storage.registry.RegistrySynchronizer;
 import org.openbase.jul.storage.registry.RemoteRegistry;
 import org.openbase.jul.storage.registry.SynchronizableRegistry;
@@ -44,8 +45,8 @@ public abstract class JavaFX3dObjectRegistrySynchronizer<KEY, ENTRY extends Java
 
     Group objectGroup;
 
-    public JavaFX3dObjectRegistrySynchronizer(Group objectGroup, SynchronizableRegistry<KEY, ENTRY> registry, RemoteRegistry<KEY, CONFIG_M, CONFIG_MB> remoteRegistry, Factory<ENTRY, CONFIG_M> factory) throws InstantiationException {
-        super(registry, remoteRegistry, factory);
+    public JavaFX3dObjectRegistrySynchronizer(Group objectGroup, SynchronizableRegistry<KEY, ENTRY> registry, RemoteRegistry<KEY, CONFIG_M, CONFIG_MB> remoteRegistry, final RegistryRemote registryRemote, Factory<ENTRY, CONFIG_M> factory) throws InstantiationException {
+        super(registry, remoteRegistry, registryRemote, factory);
         this.objectGroup = objectGroup;
     }
 
