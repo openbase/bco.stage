@@ -22,14 +22,11 @@ package org.openbase.bco.stage;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.openbase.bco.psc.lib.jp.JPPscUnitFilterList;
 import org.openbase.bco.psc.lib.registry.PointingUnitChecker;
 import org.openbase.bco.registry.remote.Registries;
-import static org.openbase.bco.registry.remote.Registries.getUnitRegistry;
 import org.openbase.bco.stage.jp.JPDisableRegistry;
 import org.openbase.bco.stage.jp.JPFilterPscUnits;
 import org.openbase.bco.stage.registry.JavaFX3dObjectRegistrySynchronizer;
@@ -56,6 +53,11 @@ import rst.domotic.unit.UnitProbabilityCollectionType.UnitProbabilityCollection;
 import rst.domotic.unit.UnitTemplateType.UnitTemplate.UnitType;
 import rst.tracking.PointingRay3DFloatDistributionCollectionType.PointingRay3DFloatDistributionCollection;
 import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.openbase.bco.registry.remote.Registries.getUnitRegistry;
 
 /**
  *
@@ -151,7 +153,7 @@ public final class Controller extends AbstractEventHandler {
             Registries.getUnitRegistry().waitForData(3, TimeUnit.SECONDS);
 
             this.objectBoxRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder>(GUIManager.getInstance().getObjectGroup(),
-                    GUIManager.getInstance().getObjectBoxRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), ObjectBoxFactory.getInstance()) {
+                    GUIManager.getInstance().getObjectBoxRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), getUnitRegistry(), ObjectBoxFactory.getInstance()) {
                 @Override
                 public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
                     try {
@@ -170,7 +172,7 @@ public final class Controller extends AbstractEventHandler {
             };
 
             this.roomRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<String, RegistryRoom, UnitConfig, UnitConfig.Builder>(GUIManager.getInstance().getRoomGroup(),
-                    GUIManager.getInstance().getRoomRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), RegistryRoomFactory.getInstance()) {
+                    GUIManager.getInstance().getRoomRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), getUnitRegistry(), RegistryRoomFactory.getInstance()) {
                 @Override
                 public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
                     try {
