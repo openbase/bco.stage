@@ -66,13 +66,13 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
         try {
             this.config = config;
             //TODO: Ask Marian how this can work, if I only synchronize the units themselves?!
-            AxisAlignedBoundingBox3DFloat boundingBox = Registries.getLocationRegistry(true).getUnitShape(config).getBoundingBox();
+            AxisAlignedBoundingBox3DFloat boundingBox = Registries.getUnitRegistry(true).getUnitShape(config).getBoundingBox();
             // TODO: Are there still visualization errors when changing the bounding box size but not the translation?
             // Previously the box was moved sometimes.
 
-            Point3d center = Registries.getLocationRegistry(true).getUnitBoundingBoxCenterGlobalPoint3d(config);
+            Point3d center = Registries.getUnitRegistry(true).getUnitBoundingBoxCenterGlobalPoint3d(config);
             AxisAngle4d aa = new AxisAngle4d();
-            aa.set(Registries.getLocationRegistry(true).getUnitRotationGlobalQuat4d(config));
+            aa.set(Registries.getUnitRegistry(true).getUnitRotationGlobalQuat4d(config));
 
             Platform.runLater(() -> {
                 box.setVisible(true);

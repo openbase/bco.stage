@@ -176,7 +176,7 @@ public final class Controller extends AbstractEventHandler {
                 @Override
                 public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
                     try {
-                        return config.getType() == UnitType.LOCATION && PointingUnitChecker.hasLocationData(config);
+                        return config.getUnitType() == UnitType.LOCATION && PointingUnitChecker.hasLocationData(config);
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt();
                         throw new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex);
