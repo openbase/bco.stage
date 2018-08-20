@@ -30,6 +30,7 @@ import org.openbase.bco.psc.lib.rsb.LocalConfigProviderInterface;
 import org.openbase.jps.core.JPService;
 import org.openbase.jps.exception.JPNotAvailableException;
 import org.openbase.jul.exception.CouldNotPerformException;
+import org.openbase.jul.extension.rsb.com.exception.RSBResolvedException;
 import org.slf4j.LoggerFactory;
 import rsb.AbstractEventHandler;
 import rsb.Factory;
@@ -99,7 +100,7 @@ public class RSBConnection implements LocalConfigProviderInterface {
             rayListener.deactivate();
             selectedUnitListener.deactivate();
         } catch (RSBException ex) {
-            throw new CouldNotPerformException("Could not deactivate informer and listener.", ex);
+            throw new CouldNotPerformException("Could not deactivate informer and listener.", new RSBResolvedException(ex));
         }
     }
 
@@ -156,7 +157,9 @@ public class RSBConnection implements LocalConfigProviderInterface {
             rayListener.addHandler(handler, true);
             selectedUnitListener.addHandler(handler, true);
 
-        } catch (JPNotAvailableException | RSBException ex) {
+        } catch (RSBException ex) {
+            throw new CouldNotPerformException("RSB listener could not be initialized.", new RSBResolvedException(ex));
+        } catch (JPNotAvailableException ex) {
             throw new CouldNotPerformException("RSB listener could not be initialized.", ex);
         }
     }
