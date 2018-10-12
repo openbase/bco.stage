@@ -61,7 +61,7 @@ public class Stage extends Application {
         JPService.parseAndExitOnError(args);
 //        JPService.printHelp();
 
-        Controller.initInstance(primaryStage);
+        StageController.initInstance(primaryStage);
     }
 
     /**

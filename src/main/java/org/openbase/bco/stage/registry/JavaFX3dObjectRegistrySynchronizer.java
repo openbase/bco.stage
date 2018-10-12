@@ -40,8 +40,7 @@ import org.openbase.jul.storage.registry.SynchronizableRegistry;
  * @param <CONFIG_M>
  * @param <CONFIG_MB>
  */
-public abstract class JavaFX3dObjectRegistrySynchronizer<KEY, ENTRY extends JavaFX3dObjectRegistryEntry<KEY, CONFIG_M>, CONFIG_M extends GeneratedMessage, CONFIG_MB extends CONFIG_M.Builder<CONFIG_MB>>
-        extends RegistrySynchronizer<KEY, ENTRY, CONFIG_M, CONFIG_MB> {
+public class JavaFX3dObjectRegistrySynchronizer<KEY, ENTRY extends JavaFX3dObjectRegistryEntry<KEY, CONFIG_M>, CONFIG_M extends GeneratedMessage, CONFIG_MB extends CONFIG_M.Builder<CONFIG_MB>> extends RegistrySynchronizer<KEY, ENTRY, CONFIG_M, CONFIG_MB> {
 
     Group objectGroup;
 

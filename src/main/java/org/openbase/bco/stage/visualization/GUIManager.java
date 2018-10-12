@@ -35,7 +35,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.openbase.bco.stage.Controller;
+import org.openbase.bco.stage.StageController;
 import org.openbase.jps.core.JPService;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.InstantiationException;
@@ -196,12 +196,12 @@ public final class GUIManager {
                     break;
                 case C:
                     try {
-                        Controller.getInstance().initializeRegistryConnection();
+                        StageController.getInstance().initializeRegistryConnection();
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt();
-                        Controller.criticalError(ex);
+                        StageController.criticalError(ex);
                     } catch (CouldNotPerformException ex) {
-                        Controller.criticalError(ex);
+                        StageController.criticalError(ex);
                     }
                     break;
                 default:

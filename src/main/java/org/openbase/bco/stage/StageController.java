@@ -22,6 +22,7 @@ package org.openbase.bco.stage;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.openbase.bco.psc.lib.jp.JPPscUnitFilterList;
@@ -60,13 +61,12 @@ import java.util.concurrent.TimeUnit;
 import static org.openbase.bco.registry.remote.Registries.getUnitRegistry;
 
 /**
- *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public final class Controller extends AbstractEventHandler {
+public final class StageController extends AbstractEventHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
-    private static Controller instance;
+    private static final Logger LOGGER = LoggerFactory.getLogger(StageController.class);
+    private static StageController instance;
 
     private JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder> objectBoxRegistrySynchronizer;
     private JavaFX3dObjectRegistrySynchronizer<String, RegistryRoom, UnitConfig, UnitConfig.Builder> roomRegistrySynchronizer;
@@ -77,21 +77,7 @@ public final class Controller extends AbstractEventHandler {
 
     private RSBConnection rsbConnection;
 
-    // TODO list:
-    // -InterruptedException niemals fangen!!!
-    // -Check behavior of RegistrySynchronizer in case an unverified object becomes verified. (Should register but maybe only update called).
-    public synchronized static Controller initInstance(Stage primaryStage) {
-        if (instance == null) {
-            instance = new Controller(primaryStage);
-        }
-        return instance;
-    }
-
-    public synchronized static Controller getInstance() {
-        return instance;
-    }
-
-    private Controller(Stage primaryStage) {
+    private StageController(Stage primaryStage) {
         try {
             try {
                 GUIManager.initInstance(primaryStage);
@@ -119,6 +105,20 @@ public final class Controller extends AbstractEventHandler {
         } catch (Exception ex) {
             criticalError(ex);
         }
+    }
+
+    // TODO list:
+    // -InterruptedException niemals fangen!!!
+    // -Check behavior of RegistrySynchronizer in case an unverified object becomes verified. (Should register but maybe only update called).
+    public synchronized static StageController initInstance(Stage primaryStage) {
+        if (instance == null) {
+            instance = new StageController(primaryStage);
+        }
+        return instance;
+    }
+
+    public synchronized static StageController getInstance() {
+        return instance;
     }
 
     public static final void criticalError(Exception ex) {
@@ -152,39 +152,39 @@ public final class Controller extends AbstractEventHandler {
             LOGGER.info("Initializing Registry synchronization.");
             Registries.getUnitRegistry().waitForData(3, TimeUnit.SECONDS);
 
-            this.objectBoxRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<String, ObjectBox, UnitConfig, UnitConfig.Builder>(GUIManager.getInstance().getObjectGroup(),
-                    GUIManager.getInstance().getObjectBoxRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), getUnitRegistry(), ObjectBoxFactory.getInstance()) {
-                @Override
-                public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
-                    try {
-                        if (usePSCFilter) {
-                            return PointingUnitChecker.isPointingControlUnit(config, registryFlags);
-                        } else {
-                            return PointingUnitChecker.isDalOrGroupWithLocation(config);
-                        }
-                    } catch (InterruptedException ex) {
-                        Thread.currentThread().interrupt();
-                        throw new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex);
-                    } catch (CouldNotPerformException ex) {
-                        throw new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex);
+            this.objectBoxRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<>(GUIManager.getInstance().getObjectGroup(),
+                    GUIManager.getInstance().getObjectBoxRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), getUnitRegistry(), ObjectBoxFactory.getInstance());
+            this.objectBoxRegistrySynchronizer.addFilter(config -> {
+                try {
+                    if (usePSCFilter) {
+                        return !PointingUnitChecker.isPointingControlUnit(config, registryFlags);
+                    } else {
+                        return !PointingUnitChecker.isDalOrGroupWithLocation(config);
                     }
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    ExceptionPrinter.printHistory(new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex), LOGGER);
+                } catch (CouldNotPerformException ex) {
+                    ExceptionPrinter.printHistory(new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex), LOGGER);
                 }
-            };
+                // filter in case an exception occurs.
+                return true;
+            });
 
-            this.roomRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<String, RegistryRoom, UnitConfig, UnitConfig.Builder>(GUIManager.getInstance().getRoomGroup(),
-                    GUIManager.getInstance().getRoomRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), getUnitRegistry(), RegistryRoomFactory.getInstance()) {
-                @Override
-                public boolean verifyConfig(UnitConfig config) throws VerificationFailedException {
-                    try {
-                        return config.getUnitType() == UnitType.LOCATION && PointingUnitChecker.hasLocationData(config);
-                    } catch (InterruptedException ex) {
-                        Thread.currentThread().interrupt();
-                        throw new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex);
-                    } catch (CouldNotPerformException ex) {
-                        throw new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex);
-                    }
+            this.roomRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<>(GUIManager.getInstance().getRoomGroup(),
+                    GUIManager.getInstance().getRoomRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), getUnitRegistry(), RegistryRoomFactory.getInstance());
+            this.roomRegistrySynchronizer.addFilter(config -> {
+                try {
+                    return config.getUnitType() != UnitType.LOCATION || !PointingUnitChecker.hasLocationData(config);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    ExceptionPrinter.printHistory(new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex), LOGGER);
+                } catch (CouldNotPerformException ex) {
+                    ExceptionPrinter.printHistory(new VerificationFailedException("Verification of config " + config.getLabel() + " failed.", ex), LOGGER);
                 }
-            };
+                // filter in case an exception occurs.
+                return true;
+            });
 
             Registries.waitForData();
             objectBoxRegistrySynchronizer.activate();
