@@ -21,7 +21,8 @@ package org.openbase.bco.stage.registry;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.google.protobuf.GeneratedMessage;
+import com.google.protobuf.AbstractMessage;
+import com.google.protobuf.Message;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import org.openbase.jul.exception.CouldNotPerformException;
@@ -40,7 +41,7 @@ import org.openbase.jul.storage.registry.SynchronizableRegistry;
  * @param <CONFIG_M>
  * @param <CONFIG_MB>
  */
-public class JavaFX3dObjectRegistrySynchronizer<KEY, ENTRY extends JavaFX3dObjectRegistryEntry<KEY, CONFIG_M>, CONFIG_M extends GeneratedMessage, CONFIG_MB extends CONFIG_M.Builder<CONFIG_MB>> extends RegistrySynchronizer<KEY, ENTRY, CONFIG_M, CONFIG_MB> {
+public class JavaFX3dObjectRegistrySynchronizer<KEY, ENTRY extends JavaFX3dObjectRegistryEntry<KEY, CONFIG_M>, CONFIG_M extends AbstractMessage, CONFIG_MB extends CONFIG_M.Builder<CONFIG_MB>> extends RegistrySynchronizer<KEY, ENTRY, CONFIG_M, CONFIG_MB> {
 
     Group objectGroup;
 
