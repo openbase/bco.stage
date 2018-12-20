@@ -24,7 +24,7 @@ package org.openbase.bco.stage.visualization;
  */
 import javafx.scene.paint.Material;
 import org.openbase.jul.visual.javafx.geometry.Ray3D;
-import rst.tracking.PointingRay3DFloatType.PointingRay3DFloat;
+import org.openbase.type.tracking.PointingRay3DFloatType.PointingRay3DFloat;
 
 /**
  *

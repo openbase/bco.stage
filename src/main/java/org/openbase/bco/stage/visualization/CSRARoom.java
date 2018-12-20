@@ -24,7 +24,7 @@ package org.openbase.bco.stage.visualization;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.geometry.Point3D;
-import rst.spatial.FloorCeilingEdgeIndicesType.FloorCeilingEdgeIndices;
+import org.openbase.type.spatial.FloorCeilingEdgeIndicesType.FloorCeilingEdgeIndices;
 
 /**
  *

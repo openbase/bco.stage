@@ -30,8 +30,8 @@ import javafx.scene.shape.Sphere;
 import org.openbase.bco.psc.lib.pointing.JointPair;
 import org.openbase.bco.psc.lib.pointing.Joints;
 import org.openbase.jul.visual.javafx.geometry.Line3D;
-import rst.geometry.TranslationType.Translation;
-import rst.tracking.TrackedPosture3DFloatType.TrackedPosture3DFloat;
+import org.openbase.type.geometry.TranslationType.Translation;
+import org.openbase.type.tracking.TrackedPosture3DFloatType.TrackedPosture3DFloat;
 
 /**
  *

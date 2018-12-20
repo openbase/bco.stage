@@ -46,11 +46,11 @@ import org.openbase.jul.storage.registry.SynchronizableRegistryImpl;
 import org.openbase.jul.visual.javafx.geometry.Line3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rst.domotic.unit.UnitProbabilityCollectionType.UnitProbabilityCollection;
-import rst.tracking.PointingRay3DFloatDistributionCollectionType.PointingRay3DFloatDistributionCollection;
-import rst.tracking.PointingRay3DFloatType.PointingRay3DFloat;
-import rst.tracking.TrackedPosture3DFloatType.TrackedPosture3DFloat;
-import rst.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
+import org.openbase.type.domotic.unit.UnitProbabilityCollectionType.UnitProbabilityCollection;
+import org.openbase.type.tracking.PointingRay3DFloatDistributionCollectionType.PointingRay3DFloatDistributionCollection;
+import org.openbase.type.tracking.PointingRay3DFloatType.PointingRay3DFloat;
+import org.openbase.type.tracking.TrackedPosture3DFloatType.TrackedPosture3DFloat;
+import org.openbase.type.tracking.TrackedPostures3DFloatType.TrackedPostures3DFloat;
 
 /**
  *
