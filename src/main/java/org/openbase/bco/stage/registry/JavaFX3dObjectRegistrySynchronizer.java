@@ -22,7 +22,6 @@ package org.openbase.bco.stage.registry;
  * #L%
  */
 import com.google.protobuf.AbstractMessage;
-import com.google.protobuf.Message;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import org.openbase.jul.exception.CouldNotPerformException;
