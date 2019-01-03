@@ -32,6 +32,6 @@ import org.openbase.jul.iface.Configurable;
  */
 public interface JavaFX3dObjectRegistryEntry<KEY, CONFIG_M> extends Configurable<KEY, CONFIG_M> {
 
-    public Node getNode();
+    Node getNode();
 
 }
