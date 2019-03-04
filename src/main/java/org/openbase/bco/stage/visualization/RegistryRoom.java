@@ -79,7 +79,7 @@ public class RegistryRoom implements JavaFX3dObjectRegistryEntry<String, UnitCon
     @Override
     public synchronized UnitConfig applyConfigUpdate(UnitConfig config) throws CouldNotPerformException, InterruptedException {
         this.config = config;
-        switch (config.getLocationConfig().getType()) {
+        switch (config.getLocationConfig().getLocationType()) {
             case ZONE:
                 room.visibleProperty().bind(GUIManager.getInstance().zoneVisibility);
                 break;
