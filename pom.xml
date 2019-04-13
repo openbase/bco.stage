@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.openbase</groupId>
@@ -7,15 +8,17 @@
 
     <name>BCO Stage</name>
     <inceptionYear>2017</inceptionYear>
-    <description>A software that presents a 3d-representation of the smart environment tracked skeletons, detected pointing rays and controllable objects.</description>
-    
+    <description>A software that presents a 3d-representation of the smart environment tracked skeletons, detected
+        pointing rays and controllable objects.
+    </description>
+
     <url>https://github.com/openbase/bco.stage/wiki</url>
-    
+
     <organization>
         <name>openbase.org</name>
         <url>https://github.com/openbase</url>
     </organization>
-    
+
     <developers>
         <developer>
             <id>thuppke</id>
@@ -31,16 +34,16 @@
             <timezone>+1</timezone>
         </developer>
     </developers>
- 
+
     <licenses>
         <license>
             <name>GPLv3</name>
             <url>http://www.gnu.org/licenses/gpl.html</url>
         </license>
     </licenses>
-    
+
     <packaging>jar</packaging>
-    
+
     <scm>
         <connection>scm:git:https://github.com/openbase/bco.stage.git</connection>
         <developerConnection>scm:git:https://github.com/openbase/bco.stage.git</developerConnection>
@@ -187,7 +190,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.4</version>
+                        <version>3.1.0</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -233,7 +236,7 @@
             </build>
         </profile>
     </profiles>
-	
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>11</maven.compiler.target>
@@ -254,6 +257,19 @@
             <artifactId>jul.visual.javafx</artifactId>
             <version>${dependency.jul.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>11.0.2</version>
+            <classifier>mac</classifier>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-graphics -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>11.0.2</version>
+            <classifier>mac</classifier>
+        </dependency>
     </dependencies>
 
     <pluginRepositories>
@@ -262,7 +278,7 @@
             <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
         </pluginRepository>
     </pluginRepositories>
-    
+
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
