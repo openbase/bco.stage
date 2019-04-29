@@ -149,8 +149,8 @@ public final class StageController extends AbstractEventHandler {
             return;
         }
         try {
-            LOGGER.info("Initializing Registry synchronization.");
-            Registries.getUnitRegistry().waitForData(3, TimeUnit.SECONDS);
+            LOGGER.info("Waiting for bco registry synchronization...");
+            Registries.getUnitRegistry().waitForData();
 
             this.objectBoxRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<>(GUIManager.getInstance().getObjectGroup(),
                     GUIManager.getInstance().getObjectBoxRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), getUnitRegistry(), ObjectBoxFactory.getInstance());
