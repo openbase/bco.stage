@@ -76,7 +76,7 @@
                 <configuration>
                     <programs>
                         <program>
-                            <mainClass>org.openbase.bco.stage.Stage</mainClass>
+                            <mainClass>org.openbase.bco.stage.StageLauncher</mainClass>
                             <id>bco-stage</id>
                             <platforms>
                                 <platform>unix</platform>
@@ -92,7 +92,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.openbase.bco.stage.Stage</mainClass>
+                            <mainClass>org.openbase.bco.stage.StageLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -257,19 +257,19 @@
             <artifactId>jul.visual.javafx</artifactId>
             <version>${dependency.jul.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>11.0.2</version>
             <classifier>mac</classifier>
-        </dependency>
+        </-dependency-->
         <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-graphics -->
-        <dependency>
+        <!--dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>11.0.2</version>
             <classifier>mac</classifier>
-        </dependency>
+        </dependency-->
     </dependencies>
 
     <pluginRepositories>
