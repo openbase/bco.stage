@@ -23,6 +23,11 @@ package org.openbase.bco.stage.visualization;
  * #L%
  */
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import javafx.application.Platform;
 import javafx.geometry.Point3D;
 import javafx.scene.paint.Material;
@@ -31,6 +36,7 @@ import javax.vecmath.AxisAngle4d;
 import javax.vecmath.Point3d;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openbase.bco.registry.remote.Registries;
+import org.openbase.bco.registry.unit.lib.UnitRegistry;
 import org.openbase.bco.stage.registry.JavaFX3dObjectRegistryEntry;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.NotAvailableException;
@@ -70,9 +76,9 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
             // TODO: Are there still visualization errors when changing the bounding box size but not the translation?
             // Previously the box was moved sometimes.
 
-            Point3d center = Registries.getUnitRegistry(true).getUnitBoundingBoxCenterGlobalPoint3d(config);
+            Point3d center = Registries.getUnitRegistry(true).getUnitBoundingBoxCenterGlobalPoint3d(config).get(UnitRegistry.RCT_TIMEOUT, TimeUnit.MILLISECONDS);
             AxisAngle4d aa = new AxisAngle4d();
-            aa.set(Registries.getUnitRegistry(true).getUnitRotationGlobalQuat4d(config));
+            aa.set(Registries.getUnitRegistry(true).getUnitRotationGlobalQuat4d(config).get(UnitRegistry.RCT_TIMEOUT, TimeUnit.MILLISECONDS));
 
             Platform.runLater(() -> {
                 box.setVisible(true);
@@ -95,7 +101,7 @@ public class ObjectBox implements JavaFX3dObjectRegistryEntry<String, UnitConfig
                 box.setRotate(aa.angle / Math.PI * 180);
             });
             return this.config;
-        } catch (NotAvailableException ex) {
+        } catch (NotAvailableException | TimeoutException | ExecutionException | CancellationException ex) {
             throw new CouldNotPerformException("applyConfigUpdate failed.", ex);
         }
     }

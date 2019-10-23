@@ -24,6 +24,10 @@ package org.openbase.bco.stage.visualization;
  */
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import javafx.geometry.Point3D;
 import javafx.scene.Node;
@@ -31,6 +35,7 @@ import javax.media.j3d.Transform3D;
 import javax.vecmath.Point3d;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openbase.bco.registry.remote.Registries;
+import org.openbase.bco.registry.unit.lib.UnitRegistry;
 import org.openbase.bco.stage.registry.JavaFX3dObjectRegistryEntry;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.NotAvailableException;
@@ -96,11 +101,11 @@ public class RegistryRoom implements JavaFX3dObjectRegistryEntry<String, UnitCon
         ShapeType.Shape shape = config.getPlacementConfig().getShape();
         Transform3D unitToRootTransform;
         try {
-            unitToRootTransform = Registries.getUnitRegistry(true).getUnitToRootTransform3D(config);
+            unitToRootTransform = Registries.getUnitRegistry(true).getUnitToRootTransform3D(config).get(UnitRegistry.RCT_TIMEOUT, TimeUnit.MILLISECONDS);
             List<Point3D> floorPoints = transformPositions(shape.getFloorList(), unitToRootTransform);
             List<Point3D> ceilingPoints = transformPositions(shape.getCeilingList(), unitToRootTransform);
             room.setConnections(floorPoints, ceilingPoints, shape.getFloorCeilingEdgeList());
-        } catch (CouldNotPerformException ex) {
+        } catch (CouldNotPerformException | TimeoutException | ExecutionException | CancellationException ex) {
             throw new CouldNotPerformException("applyConfigUpdate failed.", ex);
         }
         return config;
