@@ -153,7 +153,7 @@ public final class StageController extends AbstractEventHandler {
             Registries.getUnitRegistry().waitForData();
 
             this.objectBoxRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<>(GUIManager.getInstance().getObjectGroup(),
-                    GUIManager.getInstance().getObjectBoxRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), getUnitRegistry(), ObjectBoxFactory.getInstance());
+                    GUIManager.getInstance().getObjectBoxRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(true), getUnitRegistry(), ObjectBoxFactory.getInstance());
             this.objectBoxRegistrySynchronizer.addFilter(config -> {
                 try {
                     if (usePSCFilter) {
@@ -172,7 +172,7 @@ public final class StageController extends AbstractEventHandler {
             });
 
             this.roomRegistrySynchronizer = new JavaFX3dObjectRegistrySynchronizer<>(GUIManager.getInstance().getRoomGroup(),
-                    GUIManager.getInstance().getRoomRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(), getUnitRegistry(), RegistryRoomFactory.getInstance());
+                    GUIManager.getInstance().getRoomRegistry(), getUnitRegistry().getUnitConfigRemoteRegistry(true), getUnitRegistry(), RegistryRoomFactory.getInstance());
             this.roomRegistrySynchronizer.addFilter(config -> {
                 try {
                     return config.getUnitType() != UnitType.LOCATION || !PointingUnitChecker.hasLocationData(config);
