@@ -21,15 +21,14 @@ package org.openbase.bco.stage.rsb;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import org.openbase.bco.psc.lib.jp.JPLocalInput;
 import org.openbase.bco.psc.lib.jp.JPPSCBaseScope;
 import org.openbase.bco.psc.lib.jp.JPPostureScope;
 import org.openbase.bco.psc.lib.jp.JPRayScope;
 import org.openbase.bco.psc.lib.jp.JPSelectedUnitScope;
-import org.openbase.bco.psc.lib.rsb.LocalConfigProviderInterface;
 import org.openbase.jps.core.JPService;
 import org.openbase.jps.exception.JPNotAvailableException;
 import org.openbase.jul.exception.CouldNotPerformException;
+import org.openbase.jul.extension.rsb.com.RSBSharedConnectionConfig;
 import org.openbase.jul.extension.rsb.com.exception.RSBResolvedException;
 import org.slf4j.LoggerFactory;
 import rsb.AbstractEventHandler;
@@ -48,7 +47,7 @@ import org.openbase.type.tracking.TrackedPostures3DFloatType.TrackedPostures3DFl
  *
  * @author <a href="mailto:thuppke@techfak.uni-bielefeld.de">Thoren Huppke</a>
  */
-public class RSBConnection implements LocalConfigProviderInterface {
+public class RSBConnection {
 
     /**
      * Logger instance.
@@ -138,16 +137,9 @@ public class RSBConnection implements LocalConfigProviderInterface {
             LOGGER.info("Initializing RSB Posture Listener on scope: " + postureScope);
             LOGGER.info("Initializing RSB Ray Listener on scope: " + rayScope);
             LOGGER.info("Initializing RSB Selected Unit Listener on scope: " + selectedUnitScope);
-            if (JPService.getProperty(JPLocalInput.class).getValue()) {
-                LOGGER.warn("RSB input set to socket and localhost.");
-                skeletonListener = Factory.getInstance().createListener(postureScope, getLocalConfig());
-                rayListener = Factory.getInstance().createListener(rayScope, getLocalConfig());
-                selectedUnitListener = Factory.getInstance().createListener(selectedUnitScope, getLocalConfig());
-            } else {
-                skeletonListener = Factory.getInstance().createListener(postureScope);
-                rayListener = Factory.getInstance().createListener(rayScope);
-                selectedUnitListener = Factory.getInstance().createListener(selectedUnitScope);
-            }
+            skeletonListener = Factory.getInstance().createListener(postureScope, RSBSharedConnectionConfig.getParticipantConfig());
+            rayListener = Factory.getInstance().createListener(rayScope, RSBSharedConnectionConfig.getParticipantConfig());
+            selectedUnitListener = Factory.getInstance().createListener(selectedUnitScope, RSBSharedConnectionConfig.getParticipantConfig());
             skeletonListener.activate();
             rayListener.activate();
             selectedUnitListener.activate();

@@ -23,7 +23,6 @@ package org.openbase.bco.stage;
  */
 import java.util.List;
 import javafx.application.Application;
-import org.openbase.bco.psc.lib.jp.JPLocalInput;
 import org.openbase.bco.psc.lib.jp.JPPSCBaseScope;
 import org.openbase.bco.psc.lib.jp.JPPostureScope;
 import org.openbase.bco.psc.lib.jp.JPPscUnitFilterList;
@@ -32,6 +31,9 @@ import org.openbase.bco.psc.lib.jp.JPSelectedUnitScope;
 import org.openbase.bco.stage.jp.JPDisableRegistry;
 import org.openbase.bco.stage.jp.JPFilterPscUnits;
 import org.openbase.jps.core.JPService;
+import org.openbase.jul.extension.rsb.com.jp.JPRSBHost;
+import org.openbase.jul.extension.rsb.com.jp.JPRSBPort;
+import org.openbase.jul.extension.rsb.com.jp.JPRSBTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +54,9 @@ public class Stage extends Application {
         JPService.registerProperty(JPPostureScope.class);
         JPService.registerProperty(JPRayScope.class);
         JPService.registerProperty(JPSelectedUnitScope.class);
-        JPService.registerProperty(JPLocalInput.class);
+        JPService.registerProperty(JPRSBTransport.class);
+        JPService.registerProperty(JPRSBHost.class);
+        JPService.registerProperty(JPRSBPort.class);
         JPService.registerProperty(JPPscUnitFilterList.class);
         JPService.registerProperty(JPDisableRegistry.class);
         JPService.registerProperty(JPFilterPscUnits.class);
